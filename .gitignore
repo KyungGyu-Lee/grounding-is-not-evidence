@@ -1,0 +1,37 @@
+# caches
+__pycache__/
+*.py[cod]
+_cache/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# secrets
+.env
+.env.*
+*.pem
+*.key
+
+# model weights and large binaries
+*.pt
+*.pth
+*.pkl
+*.bin
+*.safetensors
+*.ckpt
+weight_path/
+checkpoints/
+
+# videos and extracted frames
+*.mp4
+*.mkv
+*.webm
+*.avi
+frames/
+clips/
+
+# source datasets (fetch separately, see DATA_LICENSE.md)
+/data/
+
+# scratch
+*.log
+.DS_Store

@@ -1,0 +1,277 @@
+% =====================================================================
+% TEF -- table set, v5  [REGENERATED from canonical trees: build_paper_numbers]
+% QVH-ME  : results_v5 (763, two-stage generation, fully hand-verified)
+% NExT-GQA: results_v3 = results_tsfix (2268, timestamp-scale corrected)
+% C1 = priors must not suffice; C2 = the video must matter; C3 = rho < 0.433
+% Numbers auto-filled by analysis/gen_tables (no hand-edited cells).
+% =====================================================================
+
+\providecommand{\und}{---}
+
+% ===================== TABLE 1 -- Measurability funnel =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{NExT-GQA} & \multicolumn{2}{c}{QVH-ME} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Question set & $N$ & \% & $N$ & \% \\
+\midrule
+All questions & 2{,}268 & 100.0 & 763 & 100.0 \\
+$+$ C1 prior-exclusion & 1{,}526 & 67.3 & 560 & 73.4 \\
+$+$ C2 answerability & 1{,}116 & 49.2 & 427 & 56.0 \\
+$+$ C3 evidence-specificity & 248 & 10.9 & 241 & 31.6 \\
+\bottomrule
+\end{tabular}
+\caption{Measurability funnel. Only half of NExT-GQA satisfies the first
+two conditions. Under the same absolute threshold ($\rho \le 0.4$),
+nearly a third of QVH-ME survives all three against a ninth of
+NExT-GQA. Rows nest, so order of application does not change the
+result.}
+\label{tab:funnel}
+\end{table}
+
+% ===================== TABLE 2 -- Condition ablation =====================
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{NExT-GQA} & \multicolumn{2}{c}{QVH-ME} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Question set & SG & $N$ & SG & $N$ \\
+\midrule
+No condition & $+0.023$ & 2{,}268 & $+0.125$ & 763 \\
+C1 only (prior-exclusion) & $+0.026$ & 1{,}526 & $+0.144$ & 560 \\
+C2 (answerability) & $+0.032$ & 1{,}116 & $+0.161$ & 427 \\
+C3 (evidence-specificity) & $+0.124$ & 248 & $+0.212$ & 241 \\
+\bottomrule
+\end{tabular}
+\caption{Mean Support Gain under each condition, averaged over grounding
+models. On NExT-GQA, prior-exclusion adds $0.003$ while
+evidence-specificity raises Support Gain from $0.032$ on C2 to $0.124$
+on C3. The change is smaller on QVH-ME, which starts with lower temporal
+redundancy. Rows nest ($C_3 \subseteq C_2 \subseteq C_1$), so this chain
+covers all eight subsets.}
+\label{tab:ablation}
+\end{table}
+
+% ===================== TABLE 3 -- What overlap does not tell us =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{NExT-GQA} & \multicolumn{2}{c}{QVH-ME} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & C2 & C3 & C2 & C3 \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Pairs of models with similar overlap}} \\
+\quad pairs, $|\Delta\mathrm{IoP}| \le 0.1$ & 1{,}040 & 218 & 1{,}805 & 1{,}003 \\
+\quad disagree on retention & .237 & .372 & .294 & .320 \\
+\quad under random pairing & .279 & .382 & .335 & .357 \\
+\quad \emph{gap} & \emph{4.2} & \emph{1.1} & \emph{4.1} & \emph{3.7} \\
+\addlinespace
+\multicolumn{5}{@{}l}{\emph{Answer retained on its own window, by IoP bin}} \\
+\quad $[0.5, 0.7)$ & .836 & .761 & .805 & .783 \\
+\quad $[0.7, 0.9)$ & .861 & .809 & .803 & .764 \\
+\quad $[0.9, 1.0]$ & .813 & .683 & .779 & .765 \\
+\addlinespace
+\multicolumn{5}{@{}l}{\emph{Predictions contained entirely in the annotation}} \\
+\quad count ($\mathrm{IoP} = 1.00$) & 530 & 120 & 701 & 395 \\
+\quad answer not reproduced & .192 & .333 & .247 & .263 \\
+\quad no gain over random & .721 & .650 & .451 & .400 \\
+\addlinespace
+Spearman$(\mathrm{IoP}, \mathrm{SG})$, pooled & .082 & .144 & .260 & .323 \\
+\quad per-model max & .122 & .283 & .251 & .292 \\
+\bottomrule
+\end{tabular}
+\caption{Four views of the same question: does greater overlap imply
+greater support? \emph{Gap} is the percentage-point advantage of
+matching on IoP over pairing at random; on NExT-GQA C3 it nearly
+vanishes. Restricting the first block to pairs that both score
+$\mathrm{IoP} \ge 0.8$ changes nothing (C2: 24.5\% and 29.8\%).}
+\label{tab:audit}
+\end{table}
+
+% ===================== TABLE 4 -- Two levels of correlation =====================
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Level & NExT-GQA & QVH-ME \\
+\midrule
+Per question, Spearman$(\mathrm{IoP}, \mathrm{SG})$ & $+0.082$ & $+0.260$ \\
+Per model, Spearman$(\overline{\mathrm{IoU}}, \overline{\mathrm{SG}})$ & $+0.600$ & $+0.857$ \\
+\bottomrule
+\end{tabular}
+\caption{Overlap and Support Gain at two levels, on C2. The per-model
+figure uses mean IoU over grounding models ($n = 5$ and $7$), excluding
+the reference models, whose degenerate predictions dominate any ranking
+they enter (including them sends the NExT-GQA figure to $-0.179$). We
+report it only to contrast it with the per-question figure. The
+per-model correlation with mean IoP rather than IoU is $0.500$ and
+$0.821$.}
+\label{tab:spearman}
+\end{table}
+
+% ===================== TABLE 5 -- Positive control, pooled =====================
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+ & & $N$ & $\mathrm{Ret}(\text{rand-gt})$ & $\mathrm{Ret}(\text{gt})$ & $\mathrm{SG}_{\mathrm{gt}}$ \\
+\midrule
+\multirow{2}{*}{NExT-GQA}
+ & C2 & 1{,}116 & .767 & .833 & $+0.066$ \\
+ & C3 & 248 & .563 & .772 & $+0.210$ \\
+\addlinespace
+\multirow{2}{*}{QVH-ME}
+ & C2 & 427 & .553 & .795 & $+0.242$ \\
+ & C3 & 241 & .438 & .769 & $+0.332$ \\
+\bottomrule
+\end{tabular}
+\caption{Positive control, averaged over grounding models. Supplying the
+annotated window --- the strongest localization available --- gains only
+$0.066$ on the questions that pass C2 on NExT-GQA. Adding
+evidence-specificity raises it to $0.210$, and the rise is
+$\mathrm{Ret}(\text{rand-gt})$ falling rather than
+$\mathrm{Ret}(\text{gt})$ improving.}
+\label{tab:oracle}
+\end{table}
+
+% ===================== TABLE 6 -- Per-model results =====================
+\begin{table*}[t]
+\centering\small
+\begin{tabular}{@{}llrrrlrr@{}}
+\toprule
+Model & Set & $\mathrm{Ret}(\text{none})$ & $\mathrm{Ret}(\text{rand})$ & $\mathrm{Ret}(\text{pred})$ & SG [95\% CI] & $\mathrm{SG}_{\mathrm{gt}}$ & ESR \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{NExT-GQA} \quad $N = 1{,}116$ (C2) / $248$ (C3)} \\
+Qwen2.5-VL                 & C2 & .375 & .759 & .845 & $+0.086$ [$+.061,+.109$] & $+0.118$ & .72 \\
+                           & C3 & .367 & .427 & .722 & $+0.294$ [$+.227,+.361$] & $+0.455$ & .65 \\
+VideoMind$^{\ddagger}$     & C2 & .698 & .775 & .804 & $+0.029$ [$+.006,+.052$] & $+0.064$ & .46 \\
+                           & C3 & .536 & .596 & .726 & $+0.130$ [$+.075,+.187$] & $+0.182$ & .71 \\
+Grounded-VideoLLM          & C2 & .407 & .796 & .820 & $+0.024$ [$+.002,+.046$] & $+0.089$ & .27 \\
+                           & C3 & .456 & .644 & .770 & $+0.127$ [$+.073,+.178$] & $+0.231$ & .55 \\
+GroundVTS                  & C2 & .488 & .739 & .762 & $+0.023$ [$+.000,+.045$] & $+0.059$ & .39 \\
+                           & C3 & .492 & .552 & .613 & $+0.061$ [$+.005,+.117$] & $+0.172$ & .36 \\
+VTimeLLM$^{\dagger}$       & C2 & .656 & .899 & .898 & $-0.001$ [$-.019,+.017$] & $+0.002$ & \und \\
+                           & C3 & .698 & .877 & .883 & $+0.006$ [$-.031,+.044$] & $+0.009$ & \und \\
+\addlinespace
+InternVL2.5-8B$^{\S}$      & C2 & .427 & .787 & .835 & \und & $+0.099$ & \und \\
+                           & C3 & .419 & .518 & .641 & \und & $+0.328$ & \und \\
+VideoLLaMA2-7B$^{\S}$      & C2 & .401 & .685 & .784 & \und & $+0.034$ & \und \\
+                           & C3 & .476 & .540 & .661 & \und & $+0.157$ & \und \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{QVH-ME} \quad $N = 427$ (C2) / $241$ (C3)} \\
+VideoChat-R1               & C2 & .337 & .445 & .803 & $+0.358$ [$+.310,+.406$] & $+0.439$ & .82 \\
+                           & C3 & .303 & .279 & .784 & $+0.505$ [$+.443,+.563$] & $+0.642$ & .79 \\
+Qwen2.5-VL                 & C2 & .344 & .452 & .780 & $+0.328$ [$+.281,+.375$] & $+0.445$ & .74 \\
+                           & C3 & .303 & .293 & .747 & $+0.454$ [$+.389,+.515$] & $+0.647$ & .70 \\
+Grounded-VideoLLM          & C2 & .335 & .466 & .646 & $+0.180$ [$+.128,+.233$] & $+0.290$ & .62 \\
+                           & C3 & .290 & .363 & .593 & $+0.230$ [$+.154,+.302$] & $+0.381$ & .60 \\
+VideoMind$^{\ddagger}$     & C2 & .452 & .520 & .689 & $+0.169$ [$+.116,+.220$] & $+0.244$ & .69 \\
+                           & C3 & .427 & .428 & .614 & $+0.186$ [$+.110,+.261$] & $+0.291$ & .64 \\
+GroundVTS                  & C2 & .468 & .434 & .525 & $+0.090$ [$+.048,+.133$] & $+0.301$ & .30 \\
+                           & C3 & .452 & .346 & .469 & $+0.123$ [$+.064,+.182$] & $+0.400$ & .31 \\
+TimeChat$^{\dagger}$       & C2 & .508 & .593 & .600 & $+0.006$ [$-.039,+.050$] & $+0.017$ & \und \\
+                           & C3 & .535 & .568 & .581 & $+0.013$ [$-.046,+.074$] & $+0.008$ & \und \\
+VTimeLLM$^{\dagger}$       & C2 & .852 & .905 & .899 & $-0.006$ [$-.035,+.021$] & $-0.045$ & \und \\
+                           & C3 & .876 & .909 & .884 & $-0.025$ [$-.062,+.012$] & $-0.045$ & \und \\
+\addlinespace
+InternVL2.5-8B$^{\S}$      & C2 & .382 & .428 & .471 & \und & $+0.300$ & \und \\
+VideoLLaMA2-7B$^{\S}$      & C2 & .396 & .758 & .789 & \und & $+0.086$ & \und \\
+\bottomrule
+\end{tabular}
+\caption{Components, Support Gain, ceiling, and evidence support ratio.
+A few models drop 1--3 questions under the missing-data policy
+(App.~\ref{sec:repro}).
+$^{\dagger}$Interval on $\mathrm{SG}_{\mathrm{gt}}$ includes zero: the
+annotated window does not move these models, so SG has no ceiling to be
+read against and ESR is undefined.
+$^{\ddagger}$VideoMind's 2B release has no answerer adapter; its answers
+come from the base weights and only its grounder produces $\hat{E}$.
+VideoMind and TimeChat were fine-tuned on QVHighlights; the others see it
+zero-shot.
+$^{\S}$Reference models. They characterize questions
+(Sec.~\ref{sec:conditions}), so reporting SG for them on the sets their
+own baselines defined would be circular; we leave it blank and report
+only the ceiling. VideoLLaMA2 also predicts the full video for 46\% of
+QVH-ME questions.
+Qwen2.5-VL and GroundVTS use a corrected timestamp scale in the shared
+Qwen2.5-VL decode path (Sec.~\ref{sec:setup}).}
+\label{tab:models}
+\end{table*}
+
+% ===================== TABLE 7 -- Grounded answers without measurable support =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+ & & $N_{gc}$ & SGA & $\textsc{uga}_{=0}$ & $\textsc{uga}_{<0}$ \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{NExT-GQA}} \\
+Qwen2.5-VL           & C2 & 397 & .30 & .62 & .07 \\
+                     & C3 & 100 & .68 & .24 & .08 \\
+VideoMind$^{\ddagger}$ & C2 & 307 & .29 & .61 & .10 \\
+                     & C3 & 57 & .60 & .32 & .09 \\
+Grounded-VideoLLM    & C2 & 197 & .28 & .60 & .11 \\
+                     & C3 & 50 & .52 & .44 & .04 \\
+GroundVTS            & C2 & 281 & .27 & .58 & .15 \\
+                     & C3 & 52 & .48 & .27 & .25 \\
+VTimeLLM$^{\dagger}$ & C2 & 114 & .16 & .77 & .07 \\
+                     & C3 & 16 & .25 & .75 & .00 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{QVH-ME}} \\
+VideoChat-R1         & C2 & 283 & .714 & .223 & .064 \\
+                     & C3 & 160 & .863 & .100 & .037 \\
+Grounded-VideoLLM    & C2 & 185 & .703 & .216 & .081 \\
+                     & C3 & 97 & .804 & .134 & .062 \\
+Qwen2.5-VL           & C2 & 283 & .682 & .233 & .085 \\
+                     & C3 & 159 & .799 & .126 & .075 \\
+VideoMind$^{\ddagger}$ & C2 & 215 & .674 & .260 & .065 \\
+                     & C3 & 112 & .786 & .161 & .054 \\
+TimeChat$^{\dagger}$ & C2 & 47 & .617 & .298 & .085 \\
+                     & C3 & 22 & .682 & .273 & .045 \\
+GroundVTS            & C2 & 103 & .583 & .301 & .117 \\
+                     & C3 & 61 & .639 & .295 & .066 \\
+VTimeLLM$^{\dagger}$ & C2 & 35 & .143 & .829 & .029 \\
+                     & C3 & 16 & .250 & .750 & .000 \\
+\bottomrule
+\end{tabular}
+\caption{Conventional grounding accuracy split by whether the predicted
+window provides measurable support, as a share of grounded-correct
+answers ($N_{gc}$). $\textsc{uga}_{=0}$: the predicted window and a
+random window are indistinguishable. $\textsc{uga}_{<0}$: the predicted
+window is worse. Bootstrap intervals in App.~\ref{sec:extra_tables};
+several C3 cells rest on fewer than 40 answers. Daggers as in
+Tab.~\ref{tab:models}.}
+\label{tab:sga_uga}
+\end{table}
+
+% ===================== TABLE 8 -- QVH-ME against NExT-GQA =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+ & NExT-GQA & QVH-ME & \\
+\midrule
+Fails C1 (prior-solvable) & 32.7\% & 26.6\% & lower \\
+Passes C2 & 49.2\% & 56.0\% & higher \\
+Passes C3 & 10.9\% & 31.6\% & higher \\
+Median $\rho$ (on C2) & 0.93 & 0.40 & lower \\
+UGA share on C2 & 70--73\% & 29--42\% & lower \\
+UGA share on C3 & 32--52\% & 14--36\% & lower \\
+\bottomrule
+\end{tabular}
+\caption{QVH-ME against NExT-GQA. The first four rows are properties of
+the questions, measured by the reference models of
+Sec.~\ref{sec:conditions}. The last two are measured over the models
+under evaluation and given as ranges; the last column gives the better
+direction. They exclude VTimeLLM and TimeChat, for which the positive
+control provides no measurable support (Tab.~\ref{tab:models}).}
+\label{tab:qvh_vs_next}
+\end{table}

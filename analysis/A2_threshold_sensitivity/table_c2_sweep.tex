@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\caption{C2 threshold sweep ($\tau_u$), with $\tau_{\rho}$ fixed at $0.4$. Because three reference models give $u-b\in\{0,1/3,2/3,1\}$, $\tau_u$ has only these two informative settings. $^{\ast}$paper setting.}
+\label{tab:a2_c2_sweep}
+\begin{tabular}{l rrrr rrrr}
+\toprule
+& \multicolumn{4}{c}{NExT-GQA} & \multicolumn{4}{c}{QVH-ME} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+$\tau_{u}$ & $N_{\text{C3}}$ & med.\ $\rho$ & SG & SG$_{\text{gt}}$ & $N_{\text{C3}}$ & med.\ $\rho$ & SG & SG$_{\text{gt}}$ \\
+\midrule
+$1/3$\,$^{\ast}$ & 248 & .133 & $+0.124$ & $+0.210$ & 241 & .000 & $+0.212$ & $+0.332$ \\
+$2/3$ & 107 & .200 & $+0.190$ & $+0.299$ & 130 & .100 & $+0.255$ & $+0.393$ \\
+\bottomrule
+\end{tabular}
+\end{table}

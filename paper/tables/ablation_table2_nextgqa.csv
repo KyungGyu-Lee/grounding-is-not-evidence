@@ -1,0 +1,5 @@
+bench,cut,N_vqid,N_rows,mean_of_means_SG,pooled_SG
+NExT,ALL,2268,11329,0.023,0.023
+NExT,C1,1526,7622,0.026,0.026
+NExT,C2,1116,5577,0.032,0.032
+NExT,C3,248,1240,0.124,0.124

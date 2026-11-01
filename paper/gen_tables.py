@@ -1,0 +1,379 @@
+# -*- coding: utf-8 -*-
+import json
+import os
+import sys
+
+import numpy as np
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# analysis/gen_tables.py  --  regenerate tables_v2.tex, no hand-filled cells.
+# INPUT TREES (canonical):
+#   NExT-GQA <- results_v3 (= results_tsfix); QVH-ME <- results_v5.
+# Regenerate figdata first (never from real results/ for NExT):
+#   BP_CWD=<wrap:results->results_v3> OUT_SUF=v3 BP_BENCHES=NExT  build_paper_numbers.py
+#   BP_CWD=<wrap:results->results_v5> OUT_SUF=v5 BP_BENCHES=QVH BP_QVH_VCR1=1 build_paper_numbers.py
+# Then this script reads the two figdata and emits tables_v2.tex (numbers only; captions fixed).
+NX = json.load(open(f'{ROOT}/paper/figdata_nextgqa.json'))['NExT']
+Q  = json.load(open(f'{ROOT}/paper/figdata_qvhme.json'))['QVH']
+RNX = json.load(open(f'{ROOT}/flags/nextgqa/r_norm.json'))['r_norm']
+RQ  = json.load(open(f'{ROOT}/flags/qvhme/r_norm.json'))['r_norm']
+
+# tex C1/C2/C3 = figdata C2/C1/C3
+def k3(x):            # ".373"
+    s=f'{x:.3f}';  return s[1:] if s[:2]=='0.' else ('-'+s[3:] if s[:3]=='-0.' else s)
+def sg(x):  return f'${x:+.3f}$'
+def sgci(ci):
+    a=f'{ci[0]:+.3f}'.replace('+0.','+.').replace('-0.','-.'); b=f'{ci[1]:+.3f}'.replace('+0.','+.').replace('-0.','-.')
+    return f'[${a},{b}$]'
+def esr(x): return '\\und' if x is None else k3v2(x)
+def k3v2(x): s=f'{x:.2f}'; return s[1:] if s[:2]=='0.' else ('-'+s[3:] if s[:3]=='-0.' else s)
+def N(n): return f'{n:,}'.replace(',','{,}')
+def pc1(x): return f'{x*100:.1f}'
+def rng(vals): return f'{min(vals)*100:.0f}--{max(vals)*100:.0f}\\%'
+
+GR_NX=['Qwen','VideoMind','GroundVTS','GVLLM','VTimeLLM']
+GR_Q =['Qwen','VideoMind','GroundVTS','GVLLM','TimeChat','VTimeLLM','VideoChat-R1']
+def omean(D,figk,key,models):
+    return np.mean([D[figk]['positive_control'][m][key] for m in models])
+
+def cell(D, figk, m, col):
+    c=D[figk]['components'][m]; o=D[figk]['positive_control'].get(m,{})
+    ci=D[figk]['paired_bootstrap_SGpred_CI'].get(m)
+    return c,o,ci
+
+# ---------- assemble values dict for reporting ----------
+V={}
+for tag,D,GR in [('NX',NX,GR_NX),('Q',Q,GR_Q)]:
+    for figk in ['C2','C3','C1','ALL']:
+        pass
+# ================= EMIT TEX =================
+L=[]
+def w(s): L.append(s)
+
+w(r"""% =====================================================================
+% TEF -- table set, v5  [REGENERATED from canonical trees: build_paper_numbers]
+% QVH-ME  : results_v5 (763, two-stage generation, fully hand-verified)
+% NExT-GQA: results_v3 = results_tsfix (2268, timestamp-scale corrected)
+% C1 = priors must not suffice; C2 = the video must matter; C3 = rho < 0.433
+% Numbers auto-filled by analysis/gen_tables (no hand-edited cells).
+% =====================================================================
+
+\providecommand{\und}{---}
+""")
+
+# ---- Table 1 funnel ----
+f_nx=NX['funnel']; f_q=Q['funnel']; A_nx=f_nx['ALL']; A_q=f_q['ALL']
+w(r"""% ===================== TABLE 1 -- Measurability funnel =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{NExT-GQA} & \multicolumn{2}{c}{QVH-ME} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Question set & $N$ & \% & $N$ & \% \\
+\midrule
+All questions & """+f"{N(A_nx)} & 100.0 & {N(A_q)} & 100.0"+r""" \\
+$+$ C1 prior-exclusion & """+f"{N(f_nx['C1'])} & {pc1(f_nx['C1']/A_nx)} & {N(f_q['C1'])} & {pc1(f_q['C1']/A_q)}"+r""" \\
+$+$ C2 answerability & """+f"{N(f_nx['C2'])} & {pc1(f_nx['C2']/A_nx)} & {N(f_q['C2'])} & {pc1(f_q['C2']/A_q)}"+r""" \\
+$+$ C3 evidence-specificity & """+f"{N(f_nx['C3'])} & {pc1(f_nx['C3']/A_nx)} & {N(f_q['C3'])} & {pc1(f_q['C3']/A_q)}"+r""" \\
+\bottomrule
+\end{tabular}
+\caption{Measurability funnel. Only half of NExT-GQA satisfies the first
+two conditions. Under the same absolute threshold ($\rho \le 0.4$),
+nearly a third of QVH-ME survives all three against a ninth of
+NExT-GQA. Rows nest, so order of application does not change the
+result.}
+\label{tab:funnel}
+\end{table}
+""")
+
+# ---- Table 2 ablation ----
+def ab(D,figk): return D['ablation_table'][figk]['mean_of_means'], D['ablation_table'][figk]['N_vqid']
+rows=[('No condition','ALL'),('C1 only (prior-exclusion)','C1'),('C2 (answerability)','C2'),('C3 (evidence-specificity)','C3')]
+tb=''
+for lab,fk in rows:
+    snx,nnx=ab(NX,fk); sq,nq=ab(Q,fk)
+    tb+=f"{lab} & {sg(snx)} & {N(nnx)} & {sg(sq)} & {N(nq)} "+r"\\"+"\n"
+t2_add=round(ab(NX,'C1')[0],3)-round(ab(NX,'ALL')[0],3)
+t2_c2=ab(NX,'C2')[0]; t2_c3=ab(NX,'C3')[0]
+w(r"""% ===================== TABLE 2 -- Condition ablation =====================
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{NExT-GQA} & \multicolumn{2}{c}{QVH-ME} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Question set & SG & $N$ & SG & $N$ \\
+\midrule
+"""+tb+r"""\bottomrule
+\end{tabular}
+\caption{Mean Support Gain under each condition, averaged over grounding
+models. On NExT-GQA, prior-exclusion adds $"""+f"{t2_add:.3f}"+r"""$ while
+evidence-specificity raises Support Gain from $"""+f"{t2_c2:.3f}"+r"""$ on C2 to $"""+f"{t2_c3:.3f}"+r"""$
+on C3. The change is smaller on QVH-ME, which starts with lower temporal
+redundancy. Rows nest ($C_3 \subseteq C_2 \subseteq C_1$), so this chain
+covers all eight subsets.}
+\label{tab:ablation}
+\end{table}
+""")
+
+# ---- Table 3 audit ----
+def d3(D,figk): return D[figk]['dIoP_pairs']
+def bins(D,figk): return D[figk]['IoP_bins']
+def eq1(D,figk): return D[figk]['IoP_eq1']
+def sp(D,figk): return D[figk]['spearman']
+cols=[('NX','C2'),('NX','C3'),('Q','C2'),('Q','C3')]  # tex C2,C3 per bench
+DD={'NX':NX,'Q':Q}
+def row4(fn): return ' & '.join(fn(DD[t],fk) for t,fk in cols)
+gap=lambda D,fk: f"{(d3(D,fk)['baseline_2p1p']-d3(D,fk)['discord'])*100:.1f}"
+dh=lambda D,fk: d3(D,fk)['discord_hi']*100
+w(r"""% ===================== TABLE 3 -- What overlap does not tell us =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{NExT-GQA} & \multicolumn{2}{c}{QVH-ME} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & C2 & C3 & C2 & C3 \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Pairs of models with similar overlap}} \\
+\quad pairs, $|\Delta\mathrm{IoP}| \le 0.1$ & """+row4(lambda D,fk:N(d3(D,fk)['n_pairs']))+r""" \\
+\quad disagree on retention & """+row4(lambda D,fk:k3(d3(D,fk)['discord']))+r""" \\
+\quad under random pairing & """+row4(lambda D,fk:k3(d3(D,fk)['baseline_2p1p']))+r""" \\
+\quad \emph{gap} & """+row4(lambda D,fk:'\\emph{'+gap(D,fk)+'}')+r""" \\
+\addlinespace
+\multicolumn{5}{@{}l}{\emph{Answer retained on its own window, by IoP bin}} \\
+\quad $[0.5, 0.7)$ & """+row4(lambda D,fk:k3(bins(D,fk)['[0.5,0.7)']['KE1']))+r""" \\
+\quad $[0.7, 0.9)$ & """+row4(lambda D,fk:k3(bins(D,fk)['[0.7,0.9)']['KE1']))+r""" \\
+\quad $[0.9, 1.0]$ & """+row4(lambda D,fk:k3(bins(D,fk)['[0.9,1.0)']['KE1']))+r""" \\
+\addlinespace
+\multicolumn{5}{@{}l}{\emph{Predictions contained entirely in the annotation}} \\
+\quad count ($\mathrm{IoP} = 1.00$) & """+row4(lambda D,fk:str(eq1(D,fk)['N']))+r""" \\
+\quad answer not reproduced & """+row4(lambda D,fk:k3(eq1(D,fk)['KE0_rate']))+r""" \\
+\quad no gain over random & """+row4(lambda D,fk:k3(eq1(D,fk)['SGle0_rate']))+r""" \\
+\addlinespace
+Spearman$(\mathrm{IoP}, \mathrm{SG})$, pooled & """+row4(lambda D,fk:k3(sp(D,fk)['pooled']))+r""" \\
+\quad per-model max & """+row4(lambda D,fk:k3(max(sp(D,fk)['per_model'].values())))+r""" \\
+\bottomrule
+\end{tabular}
+\caption{Four views of the same question: does greater overlap imply
+greater support? \emph{Gap} is the percentage-point advantage of
+matching on IoP over pairing at random; on NExT-GQA C3 it nearly
+vanishes. Restricting the first block to pairs that both score
+$\mathrm{IoP} \ge 0.8$ changes nothing (C2: """+f"{dh(NX,'C2'):.1f}"+r"""\% and """+f"{dh(Q,'C2'):.1f}"+r"""\%).}
+\label{tab:audit}
+\end{table}
+""")
+
+# ---- Table 4 spearman ----
+ml_nx=sp(NX,'C2')['model_level']; ml_q=sp(Q,'C2')['model_level']
+w(r"""% ===================== TABLE 4 -- Two levels of correlation =====================
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Level & NExT-GQA & QVH-ME \\
+\midrule
+Per question, Spearman$(\mathrm{IoP}, \mathrm{SG})$ & $"""+f"{sp(NX,'C2')['pooled']:+.3f}"+r"""$ & $"""+f"{sp(Q,'C2')['pooled']:+.3f}"+r"""$ \\
+Per model, Spearman$(\overline{\mathrm{IoU}}, \overline{\mathrm{SG}})$ & $"""+f"{ml_nx['mIoU_grounders']['rho']:+.3f}"+r"""$ & $"""+f"{ml_q['mIoU_grounders']['rho']:+.3f}"+r"""$ \\
+\bottomrule
+\end{tabular}
+\caption{Overlap and Support Gain at two levels, on C2. The per-model
+figure uses mean IoU over grounding models ($n = """+f"{ml_nx['mIoU_grounders']['n']}"+r"""$ and $"""+f"{ml_q['mIoU_grounders']['n']}"+r"""$), excluding
+the reference models, whose degenerate predictions dominate any ranking
+they enter (including them sends the NExT-GQA figure to $"""+f"{ml_nx['mIoU_with_baseline']['rho']:+.3f}"+r"""$). We
+report it only to contrast it with the per-question figure. The
+per-model correlation with mean IoP rather than IoU is $"""+f"{ml_nx['mIoP_grounders']['rho']:.3f}"+r"""$ and
+$"""+f"{ml_q['mIoP_grounders']['rho']:.3f}"+r"""$.}
+\label{tab:spearman}
+\end{table}
+""")
+
+# ---- Table 5 oracle ----
+def orow(D,figk,models):
+    return N(D['funnel'][figk]), k3(omean(D,figk,'K_R_gt',models)), k3(omean(D,figk,'K_GT',models)), sg(omean(D,figk,'SG_GT',models))
+r_nx_c2=orow(NX,'C2',GR_NX); r_nx_c3=orow(NX,'C3',GR_NX); r_q_c2=orow(Q,'C2',GR_Q); r_q_c3=orow(Q,'C3',GR_Q)
+o_nx_c2=omean(NX,'C2','SG_GT',GR_NX); o_nx_c3=omean(NX,'C3','SG_GT',GR_NX)
+w(r"""% ===================== TABLE 5 -- Positive control, pooled =====================
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+ & & $N$ & $\mathrm{Ret}(\text{rand-gt})$ & $\mathrm{Ret}(\text{gt})$ & $\mathrm{SG}_{\mathrm{gt}}$ \\
+\midrule
+\multirow{2}{*}{NExT-GQA}
+ & C2 & """+' & '.join(r_nx_c2)+r""" \\
+ & C3 & """+' & '.join(r_nx_c3)+r""" \\
+\addlinespace
+\multirow{2}{*}{QVH-ME}
+ & C2 & """+' & '.join(r_q_c2)+r""" \\
+ & C3 & """+' & '.join(r_q_c3)+r""" \\
+\bottomrule
+\end{tabular}
+\caption{Positive control, averaged over grounding models. Supplying the
+annotated window --- the strongest localization available --- gains only
+$"""+f"{o_nx_c2:.3f}"+r"""$ on the questions that pass C2 on NExT-GQA. Adding
+evidence-specificity raises it to $"""+f"{o_nx_c3:.3f}"+r"""$, and the rise is
+$\mathrm{Ret}(\text{rand-gt})$ falling rather than
+$\mathrm{Ret}(\text{gt})$ improving.}
+\label{tab:oracle}
+\end{table}
+""")
+
+# ---- Table 6 per-model ----
+DAG={'VTimeLLM':'$^{\\dagger}$','TimeChat':'$^{\\dagger}$','VideoMind':'$^{\\ddagger}$','InternVL':'$^{\\S}$','VideoLLaMA2':'$^{\\S}$'}
+DISP={'Qwen':'Qwen2.5-VL','VideoMind':'VideoMind','GVLLM':'Grounded-VideoLLM','GroundVTS':'GroundVTS','VTimeLLM':'VTimeLLM','TimeChat':'TimeChat','VideoChat-R1':'VideoChat-R1','InternVL':'InternVL2.5-8B','VideoLLaMA2':'VideoLLaMA2-7B'}
+def t6row(D,m,figk,is_base,esr_und):
+    c=D[figk]['components'][m]; o=D[figk]['positive_control'].get(m,{}); ci=D[figk]['paired_bootstrap_SGpred_CI'].get(m)
+    ret=f"{k3(c['K_blind'])} & {k3(c['K_R'])} & {k3(c['K_E'])}"
+    if is_base: sgc='\\und'
+    else: sgc=f"{sg(c['SG'])} {sgci(ci)}"
+    sgg = '\\und' if o.get('SG_GT') is None else sg(o['SG_GT'])
+    e = '\\und' if (esr_und or o.get('ESR') is None) else k3v2(o['ESR'])
+    return f"{ret} & {sgc} & {sgg} & {e}"
+def t6block(D, order, base, figks):
+    out=''
+    for m in order:
+        nm=DISP[m]+DAG.get(m,'')
+        first=True
+        for figk,texlab in figks:
+            lead = f"{nm:<26}" if first else " "*26
+            und = m in ('VTimeLLM','TimeChat')
+            out+=f"{lead} & {texlab} & {t6row(D,m,figk,m in base,und)} "+r"\\"+"\n"; first=False
+    return out
+nx_g=['Qwen','VideoMind','GVLLM','GroundVTS','VTimeLLM']; nx_b=['InternVL','VideoLLaMA2']
+q_g=['VideoChat-R1','Qwen','GVLLM','VideoMind','GroundVTS','TimeChat','VTimeLLM']
+figpair=[('C2','C2'),('C3','C3')]
+nx6 = t6block(NX,nx_g,set(),figpair)+r"\addlinespace"+"\n"+t6block(NX,nx_b,{'InternVL','VideoLLaMA2'},figpair)
+# QVH baselines: C2 only
+q6 = t6block(Q,q_g,set(),figpair)+r"\addlinespace"+"\n"
+for m in ['InternVL','VideoLLaMA2']:
+    q6+=f"{DISP[m]+DAG.get(m,''):<26} & C2 & {t6row(Q,m,'C2',True,False)} "+r"\\"+"\n"
+w(r"""% ===================== TABLE 6 -- Per-model results =====================
+\begin{table*}[t]
+\centering\small
+\begin{tabular}{@{}llrrrlrr@{}}
+\toprule
+Model & Set & $\mathrm{Ret}(\text{none})$ & $\mathrm{Ret}(\text{rand})$ & $\mathrm{Ret}(\text{pred})$ & SG [95\% CI] & $\mathrm{SG}_{\mathrm{gt}}$ & ESR \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{NExT-GQA} \quad $N = """+N(NX['funnel']['C2'])+r"""$ (C2) / $"""+str(NX['funnel']['C3'])+r"""$ (C3)} \\
+"""+nx6+r"""\midrule
+\multicolumn{8}{@{}l}{\emph{QVH-ME} \quad $N = """+N(Q['funnel']['C2'])+r"""$ (C2) / $"""+str(Q['funnel']['C3'])+r"""$ (C3)} \\
+"""+q6+r"""\bottomrule
+\end{tabular}
+\caption{Components, Support Gain, ceiling, and evidence support ratio.
+A few models drop 1--3 questions under the missing-data policy
+(App.~\ref{sec:repro}).
+$^{\dagger}$Interval on $\mathrm{SG}_{\mathrm{gt}}$ includes zero: the
+annotated window does not move these models, so SG has no ceiling to be
+read against and ESR is undefined.
+$^{\ddagger}$VideoMind's 2B release has no answerer adapter; its answers
+come from the base weights and only its grounder produces $\hat{E}$.
+VideoMind and TimeChat were fine-tuned on QVHighlights; the others see it
+zero-shot.
+$^{\S}$Reference models. They characterize questions
+(Sec.~\ref{sec:conditions}), so reporting SG for them on the sets their
+own baselines defined would be circular; we leave it blank and report
+only the ceiling. VideoLLaMA2 also predicts the full video for 46\% of
+QVH-ME questions.
+Qwen2.5-VL and GroundVTS use a corrected timestamp scale in the shared
+Qwen2.5-VL decode path (Sec.~\ref{sec:setup}).}
+\label{tab:models}
+\end{table*}
+""")
+
+# ---- Table 7 SGA/UGA ----
+def t7row(D,m,figk):
+    s=D[figk]['SGA_UGA'][m]
+    return f"{s['N_grounded_correct']} & {k3v2(s['SGA'])} & {k3v2(s['UGA_A_eq0'])} & {k3v2(s['UGA_B_lt0'])}"
+def t7row3(D,m,figk):  # 3-decimal for QVH
+    s=D[figk]['SGA_UGA'][m]
+    return f"{s['N_grounded_correct']} & {k3(s['SGA'])} & {k3(s['UGA_A_eq0'])} & {k3(s['UGA_B_lt0'])}"
+def t7block(D,order,rowfn):
+    out=''
+    for m in order:
+        nm=DISP[m]+DAG.get(m,''); first=True
+        for figk,lab in figpair:
+            lead=f"{nm:<20}" if first else " "*20
+            out+=f"{lead} & {lab} & {rowfn(D,m,figk)} "+r"\\"+"\n"; first=False
+    return out
+nx7=['Qwen','VideoMind','GVLLM','GroundVTS','VTimeLLM']
+q7=['VideoChat-R1','GVLLM','Qwen','VideoMind','TimeChat','GroundVTS','VTimeLLM']
+w(r"""% ===================== TABLE 7 -- Grounded answers without measurable support =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+ & & $N_{gc}$ & SGA & $\textsc{uga}_{=0}$ & $\textsc{uga}_{<0}$ \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{NExT-GQA}} \\
+"""+t7block(NX,nx7,t7row)+r"""\midrule
+\multicolumn{6}{@{}l}{\emph{QVH-ME}} \\
+"""+t7block(Q,q7,t7row3)+r"""\bottomrule
+\end{tabular}
+\caption{Conventional grounding accuracy split by whether the predicted
+window provides measurable support, as a share of grounded-correct
+answers ($N_{gc}$). $\textsc{uga}_{=0}$: the predicted window and a
+random window are indistinguishable. $\textsc{uga}_{<0}$: the predicted
+window is worse. Bootstrap intervals in App.~\ref{sec:extra_tables};
+several C3 cells rest on fewer than 40 answers. Daggers as in
+Tab.~\ref{tab:models}.}
+\label{tab:sga_uga}
+\end{table}
+""")
+
+# ---- Table 8 QVH vs NExT ----
+UGA_NX=['Qwen','VideoMind','GroundVTS','GVLLM']; UGA_Q=['Qwen','VideoMind','GroundVTS','GVLLM','VideoChat-R1']
+def ugarange(D,figk,models): return [D[figk]['SGA_UGA'][m]['UGA_A_eq0']+D[figk]['SGA_UGA'][m]['UGA_B_lt0'] for m in models]
+failC1_nx=(A_nx-f_nx['C1'])/A_nx*100; failC1_q=(A_q-f_q['C1'])/A_q*100
+medn=np.median(list(RNX.values())); medq=np.median(list(RQ.values()))
+w(r"""% ===================== TABLE 8 -- QVH-ME against NExT-GQA =====================
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+ & NExT-GQA & QVH-ME & \\
+\midrule
+Fails C1 (prior-solvable) & """+f"{failC1_nx:.1f}\\% & {failC1_q:.1f}\\%"+r""" & lower \\
+Passes C2 & """+f"{f_nx['C2']/A_nx*100:.1f}\\% & {f_q['C2']/A_q*100:.1f}\\%"+r""" & higher \\
+Passes C3 & """+f"{f_nx['C3']/A_nx*100:.1f}\\% & {f_q['C3']/A_q*100:.1f}\\%"+r""" & higher \\
+Median $\rho$ (on C2) & """+f"{medn:.2f} & {medq:.2f}"+r""" & lower \\
+UGA share on C2 & """+f"{rng(ugarange(NX,'C2',UGA_NX))} & {rng(ugarange(Q,'C2',UGA_Q))}"+r""" & lower \\
+UGA share on C3 & """+f"{rng(ugarange(NX,'C3',UGA_NX))} & {rng(ugarange(Q,'C3',UGA_Q))}"+r""" & lower \\
+\bottomrule
+\end{tabular}
+\caption{QVH-ME against NExT-GQA. The first four rows are properties of
+the questions, measured by the reference models of
+Sec.~\ref{sec:conditions}. The last two are measured over the models
+under evaluation and given as ranges; the last column gives the better
+direction. They exclude VTimeLLM and TimeChat, for which the positive
+control provides no measurable support (Tab.~\ref{tab:models}).}
+\label{tab:qvh_vs_next}
+\end{table}
+""")
+
+open(f'{ROOT}/paper/tables.tex','w').write('\n'.join(L))
+print('WROTE %s/paper/tables.tex  (%d chars)'%(ROOT,len('\n'.join(L))))
+
+# ---- also dump scalars for the report ----
+def gr_esr(D,figk,models): return {m:D[figk]['positive_control'][m].get('ESR') for m in models}
+print('\n=== SCALARS (new canonical) ===')
+print('green oracle NExT: C2 SGgt=%.3f  C3 SGgt=%.3f'%(o_nx_c2,o_nx_c3))
+print('6.2 NExT ablation:',[round(ab(NX,fk)[0],3) for fk in ['ALL','C1','C2','C3']])
+print('6.2 QVH  ablation:',[round(ab(Q,fk)[0],3) for fk in ['ALL','C1','C2','C3']],' prior-excl-add=%.3f'%(round(ab(Q,'C1')[0],3)-round(ab(Q,'ALL')[0],3)))
+print('6.3 discord/baseline NExT-C2 %.1f/%.1f QVH-C2 %.1f/%.1f'%(d3(NX,'C2')['discord']*100,d3(NX,'C2')['baseline_2p1p']*100,d3(Q,'C2')['discord']*100,d3(Q,'C2')['baseline_2p1p']*100))
+print('6.3 IoP=1 KE0 NExT-C2 %.1f QVH-C2 %.1f NExT-C3 %.1f QVH-C3 %.1f'%(eq1(NX,'C2')['KE0_rate']*100,eq1(Q,'C2')['KE0_rate']*100,eq1(NX,'C3')['KE0_rate']*100,eq1(Q,'C3')['KE0_rate']*100))
+print('6.3 ablation C3 NExT %.1f QVH %.1f (11.6/14.3?)'%(ab(NX,'C3')[0]*100,ab(Q,'C3')[0]*100))
+print('6.3 spearman pooled NExT-C2 %.3f QVH-C2 %.3f permax QVH-C2 %.3f  mIoP QVH %.3f'%(sp(NX,'C2')['pooled'],sp(Q,'C2')['pooled'],max(sp(Q,'C2')['per_model'].values()),ml_q['mIoP_grounders']['rho']))
+print('6.4 oracle NExT C2/C3 SGgt %.3f/%.3f  Ret(gt) %.3f/%.3f  Ret(rand-gt) %.3f/%.3f  QVH-C2 SGgt %.3f'%(o_nx_c2,o_nx_c3,omean(NX,'C2','K_GT',GR_NX),omean(NX,'C3','K_GT',GR_NX),omean(NX,'C2','K_R_gt',GR_NX),omean(NX,'C3','K_R_gt',GR_NX),omean(Q,'C2','SG_GT',GR_Q)))
+print('6.4 ESR (QVH C2):',{m:(round(Q['C2']['positive_control'][m].get('ESR'),2) if Q['C2']['positive_control'][m].get('ESR') is not None else None) for m in q_g})
+print('6.5 QVH C2 SG VideoChat-R1 %.3f Qwen %.3f ; NExT C2 SG VideoMind %.3f ; QVH C2 SGgt VCR1 %.3f Qwen %.3f'%(Q['C2']['components']['VideoChat-R1']['SG'],Q['C2']['components']['Qwen']['SG'],NX['C2']['components']['VideoMind']['SG'],Q['C2']['positive_control']['VideoChat-R1']['SG_GT'],Q['C2']['positive_control']['Qwen']['SG_GT']))
+print('6.5 VTimeLLM QVH C2 Ret(none)/Ret(rand) %.3f/%.3f (85.2/90.5?)'%(Q['C2']['components']['VTimeLLM']['K_blind'],Q['C2']['components']['VTimeLLM']['K_R']))
+print('6.6 UGA C2 NExT %s QVH %s ; C3 NExT %s QVH %s'%(rng(ugarange(NX,'C2',UGA_NX)),rng(ugarange(Q,'C2',UGA_Q)),rng(ugarange(NX,'C3',UGA_NX)),rng(ugarange(Q,'C3',UGA_Q))))
+print('6.6 passes-C3 range? NExT %.1f QVH %.1f (6-12?)'%(f_nx['C3']/A_nx*100,f_q['C3']/A_q*100))
+print('6.7 type2 pct_inst NExT %.3f QVH %.3f ; case_b pct_gc NExT %.3f QVH %.3f'%(NX['C2']['type2']['pct_inst'],Q['C2']['type2']['pct_inst'],NX['C2']['case_b']['pct_grounded_correct'],Q['C2']['case_b']['pct_grounded_correct']))
+print('T3 caption discord_hi NExT-C2 %.1f QVH-C2 %.1f'%(dh(NX,'C2'),dh(Q,'C2')))

@@ -1,0 +1,28 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\caption{Draw subsampling on C3. Mean Support Gain when only $k$ of the five random draws are used, over \emph{all} $\binom{5}{k}$ subsets (min--max in brackets); $k{=}5$ is the reported value. Draw slots are treated as unordered, so every entry is invariant to permuting them. $^{\dagger}$positive-control CI includes zero (reported, not interpreted).}
+\label{tab:a3_draw_subsampling}
+\begin{tabular}{l ccccc}
+\toprule
+Model & $k{=}1$ & $k{=}2$ & $k{=}3$ & $k{=}4$ & $k{=}5$ \\
+\midrule
+\multicolumn{6}{l}{\textit{NExT-GQA}} \\
+Qwen2.5-VL & $+0.294$\,\tiny[+.270,+.315] & $+0.294$\,\tiny[+.278,+.310] & $+0.294$\,\tiny[+.284,+.305] & $+0.294$\,\tiny[+.289,+.300] & $+0.294$ \\
+VideoMind & $+0.130$\,\tiny[+.101,+.149] & $+0.130$\,\tiny[+.115,+.145] & $+0.130$\,\tiny[+.120,+.140] & $+0.130$\,\tiny[+.125,+.137] & $+0.130$ \\
+Grounded-VideoLLM & $+0.127$\,\tiny[+.101,+.153] & $+0.127$\,\tiny[+.111,+.145] & $+0.127$\,\tiny[+.114,+.137] & $+0.127$\,\tiny[+.120,+.133] & $+0.127$ \\
+GroundVTS & $+0.061$\,\tiny[+.028,+.089] & $+0.061$\,\tiny[+.044,+.079] & $+0.061$\,\tiny[+.050,+.073] & $+0.061$\,\tiny[+.054,+.070] & $+0.061$ \\
+VTimeLLM$^{\dagger}$ & $+0.006$\,\tiny[-.020,+.040] & $+0.006$\,\tiny[-.012,+.026] & $+0.006$\,\tiny[-.008,+.017] & $+0.006$\,\tiny[-.003,+.012] & $+0.006$ \\
+\midrule
+\multicolumn{6}{l}{\textit{QVH-ME}} \\
+VideoChat-R1 & $+0.505$\,\tiny[+.469,+.556] & $+0.505$\,\tiny[+.475,+.533] & $+0.505$\,\tiny[+.487,+.526] & $+0.505$\,\tiny[+.493,+.515] & $+0.505$ \\
+Qwen2.5-VL & $+0.454$\,\tiny[+.432,+.485] & $+0.454$\,\tiny[+.436,+.477] & $+0.454$\,\tiny[+.438,+.466] & $+0.454$\,\tiny[+.446,+.460] & $+0.454$ \\
+Grounded-VideoLLM & $+0.230$\,\tiny[+.195,+.270] & $+0.230$\,\tiny[+.207,+.251] & $+0.230$\,\tiny[+.216,+.245] & $+0.230$\,\tiny[+.220,+.239] & $+0.230$ \\
+VideoMind & $+0.186$\,\tiny[+.162,+.216] & $+0.186$\,\tiny[+.166,+.212] & $+0.186$\,\tiny[+.169,+.199] & $+0.186$\,\tiny[+.178,+.192] & $+0.186$ \\
+GroundVTS & $+0.123$\,\tiny[+.108,+.145] & $+0.123$\,\tiny[+.108,+.141] & $+0.123$\,\tiny[+.111,+.133] & $+0.123$\,\tiny[+.117,+.127] & $+0.123$ \\
+TimeChat$^{\dagger}$ & $+0.013$\,\tiny[-.008,+.054] & $+0.013$\,\tiny[-.004,+.033] & $+0.013$\,\tiny[+.000,+.025] & $+0.013$\,\tiny[+.003,+.019] & $+0.013$ \\
+VTimeLLM$^{\dagger}$ & $-0.025$\,\tiny[-.041,-.012] & $-0.025$\,\tiny[-.039,-.015] & $-0.025$\,\tiny[-.032,-.015] & $-0.025$\,\tiny[-.028,-.021] & $-0.025$ \\
+\bottomrule
+\end{tabular}
+\end{table}

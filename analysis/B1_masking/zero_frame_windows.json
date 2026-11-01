@@ -1,0 +1,101 @@
+{
+  "windows": [
+    {
+      "vqid": "-_s0sXOfS3w_60.0_210.0_3938",
+      "window_type": "rand_4",
+      "interval": [
+        17.89,
+        18.69
+      ],
+      "len_s": 0.8,
+      "duration": 150.0
+    },
+    {
+      "vqid": "23YBs2JxE-k_210.0_360.0_2093",
+      "window_type": "rand_0",
+      "interval": [
+        145.72,
+        146.12
+      ],
+      "len_s": 0.4,
+      "duration": 150.0
+    },
+    {
+      "vqid": "23YBs2JxE-k_210.0_360.0_2093",
+      "window_type": "rand_1",
+      "interval": [
+        63.77,
+        64.17
+      ],
+      "len_s": 0.4,
+      "duration": 150.0
+    },
+    {
+      "vqid": "23YBs2JxE-k_210.0_360.0_2093",
+      "window_type": "rand_2",
+      "interval": [
+        124.33,
+        124.73
+      ],
+      "len_s": 0.4,
+      "duration": 150.0
+    },
+    {
+      "vqid": "23YBs2JxE-k_210.0_360.0_2093",
+      "window_type": "rand_4",
+      "interval": [
+        130.46,
+        130.86
+      ],
+      "len_s": 0.4,
+      "duration": 150.0
+    },
+    {
+      "vqid": "2X46BBkcCeY_210.0_360.0_8239",
+      "window_type": "rand_1",
+      "interval": [
+        105.16,
+        106.26
+      ],
+      "len_s": 1.1,
+      "duration": 150.0
+    },
+    {
+      "vqid": "S1DZb9SkrK8_60.0_210.0_1285",
+      "window_type": "rand_2",
+      "interval": [
+        22.76,
+        23.56
+      ],
+      "len_s": 0.8,
+      "duration": 150.0
+    },
+    {
+      "vqid": "S1DZb9SkrK8_60.0_210.0_1285",
+      "window_type": "rand_3",
+      "interval": [
+        103.05,
+        103.85
+      ],
+      "len_s": 0.8,
+      "duration": 150.0
+    },
+    {
+      "vqid": "h_XoA5-_8W0_510.0_660.0_7035",
+      "window_type": "rand_1",
+      "interval": [
+        124.24,
+        125.04
+      ],
+      "len_s": 0.8,
+      "duration": 150.0
+    }
+  ],
+  "questions": [
+    "-_s0sXOfS3w_60.0_210.0_3938",
+    "23YBs2JxE-k_210.0_360.0_2093",
+    "2X46BBkcCeY_210.0_360.0_8239",
+    "S1DZb9SkrK8_60.0_210.0_1285",
+    "h_XoA5-_8W0_510.0_660.0_7035"
+  ]
+}

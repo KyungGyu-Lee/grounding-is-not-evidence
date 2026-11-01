@@ -1,0 +1,10 @@
+# Reproducing the tables and figures (CPU only) needs exactly these three.
+numpy
+pandas
+matplotlib
+
+# Re-running inference additionally needs, per model family and in separate
+# environments (versions follow each upstream repository, not this file):
+#   torch torchvision transformers decord pillow peft qwen_vl_utils easydict clip
+# Rebuilding the QVH-ME annotations needs:
+#   google-genai huggingface_hub

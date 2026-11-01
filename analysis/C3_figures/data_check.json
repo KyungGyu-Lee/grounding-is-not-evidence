@@ -1,0 +1,158 @@
+[
+ {
+  "figure": "fig_rho_sweep",
+  "line": "NExT-GQA/Qwen",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "NExT-GQA/VideoMind",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "NExT-GQA/GVLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "NExT-GQA/GroundVTS",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "NExT-GQA/VTimeLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "NExT-GQA/<mean>",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/VideoChat-R1",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/Qwen",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/GVLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/VideoMind",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/GroundVTS",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/TimeChat",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/VTimeLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_rho_sweep",
+  "line": "QVH-ME/<mean>",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "NExT-GQA/Qwen",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "NExT-GQA/VideoMind",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "NExT-GQA/GVLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "NExT-GQA/GroundVTS",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "NExT-GQA/VTimeLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "QVH-ME/VideoChat-R1",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "QVH-ME/Qwen",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "QVH-ME/GVLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "QVH-ME/VideoMind",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "QVH-ME/GroundVTS",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "QVH-ME/TimeChat",
+  "max_abs_diff": 0.0,
+  "n": 5
+ },
+ {
+  "figure": "fig_draw_subsampling",
+  "line": "QVH-ME/VTimeLLM",
+  "max_abs_diff": 0.0,
+  "n": 5
+ }
+]
