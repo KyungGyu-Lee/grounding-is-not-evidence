@@ -18,10 +18,9 @@ Every bootstrap here is numpy.random.default_rng(0) with B = 5000 over
 questions, matching paper/build_paper_numbers.py. The questions are SORTED
 before resampling: the bootstrap index matrix is fixed, so the realized
 percentiles depend on the order of the input vector, and iterating the C3 set
-directly makes the interval depend on PYTHONHASHSEED. The supplement quotes
-[.107, .266] and [.337, .487], which is one such unsorted run; the
-deterministic sorted values are [.108, .265] and [.336, .487]. Point estimates
-(.187 / .412) are order-invariant and unaffected.
+directly makes the interval depend on PYTHONHASHSEED. The supplement now
+reports these deterministic values, [.108, .265] and [.336, .487]. Point
+estimates (.187 / .412) are order-invariant and unaffected.
 
 Ported from the original run's analysis/loo_reference_sensitivity.py with the
 file layout remapped to the released tree and the question order pinned; the
@@ -61,8 +60,8 @@ TABLE_S9 = {   # (bench, variant) -> (C2 N, C3 N, median rho, C3 mean SG)
     ('QVH', 'w/o VideoLLaMA2'): (403, 240, .40, .218),
 }
 # Deterministic (sorted-question) bootstrap; see the module docstring for why
-# these differ from the supplement's [.107, .266] / [.337, .487] in the third
-# decimal. The point estimates are the supplement's.
+# the question order has to be pinned. These are the values the supplement
+# reports, point estimates and bounds alike.
 QWEN_LOO = {'NExT': (.187, .108, .265), 'QVH': (.412, .336, .487)}
 FUNNEL = {'NExT': (2268, 1526, 1116, 248), 'QVH': (763, 560, 427, 241)}
 

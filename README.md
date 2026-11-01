@@ -58,6 +58,13 @@ full-video accuracy, $r$ = mean random-window accuracy:
 | $\mathcal{C}_2$ answerability | $u - b \ge 1/3$ | 1,116 | 427 |
 | $\mathcal{C}_3$ evidence-specificity | $\rho = \frac{r-b}{u-b} \le 0.4$ | 248 | 241 |
 
+Both thresholds are applied with a `1e-9` tolerance — `u - b >= 1/3 - 1e-9`
+and `rho <= 0.4 + 1e-9` in `paper/build_paper_numbers.py` — which is what keeps
+the questions whose $\rho$ is exactly .4 in exact arithmetic (48 on NExT-GQA,
+30 on QVH-ME) inside $\mathcal{C}_3$. Twelve of those on NExT-GQA and four on
+QVH-ME land just above .4 in floating point, so implementing the condition
+without the tolerance changes $|\mathcal{C}_3|$ to 236 and 237.
+
 > **Note for readers of earlier artifacts.** The internal code used to call
 > these sets by flipped names (`C2` for prior-exclusion, `C1` for
 > answerability). **This repository uses the paper's names everywhere**, in the
@@ -158,11 +165,25 @@ plus a static check that no adapter reads the answer text during grounding.
    Over the released questions the rate is .01% / .07%, which is what
    `gen_supp_numbers.py` gates.
 
-2. **QVH-ME VideoLLaMA2 has two full-video runs that disagree.** On the 565
-   questions both cover, `flags/qvhme/fullvideo_videollama2_shard*.json` and
-   `outputs/qvhme/videollama2/step1.json` give the same prediction for 95.75%
-   of questions (accuracy .492 vs .508). C1-C3 are defined from the `flags/`
-   run. The other four reference-model pairs agree on 100% of questions.
+   A second one: the shared windows themselves ship inside the `segment` field
+   of `rand_gt_keep*.json`, but the builder that drew the QVH-ME set
+   (`qvh_r_oracle_shared.json`) is not in this repository. The NExT-GQA windows
+   re-derive exactly from the seed rule in `supportgain/core/intervals.py`
+   (`md5(vqid + '_oracle')`, one `default_rng(base + k)` per draw — 1,507 of
+   1,507 match); the QVH-ME windows do not, because the rejection loop consumes
+   a variable number of draws. Every number in the paper reads the stored
+   windows, so none of them depends on re-deriving these.
+
+2. **QVH-ME VideoLLaMA2 has two full-video runs that disagree.**
+   `flags/qvhme/fullvideo_videollama2_shard*.json` and
+   `outputs/qvhme/videollama2/step1.json` differ on 24 of the 565 questions
+   both cover (4.2%; accuracy .492 vs .508). `u` and C1-C3 are defined from the
+   `flags/` run. The only argument that differs between the two paths is the
+   clip end time handed to VideoLLaMA2's video processor — the dataset
+   `duration` column on one path, the decoder's own duration on the other —
+   which sets the model's fixed 8-frame uniform grid; the prompt and the
+   decoding settings are identical. The other four reference-model pairs agree
+   on 100% of questions.
 
 3. **19 NExT-GQA C1 questions never reach C2.** `u` needs a full-video output
    from all three reference models; 1,507 of the 1,526 C1 questions have one,
