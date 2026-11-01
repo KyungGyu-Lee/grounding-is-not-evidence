@@ -223,6 +223,10 @@ def run(adapter, model_name: str, phase: str = 'phase1',
                     'predicted_iv': s1['predicted_iv'],
                     'oracle_iv': s1['oracle_iv'],
                     'r_pred': s2['r_pred'],
+                    # r_oracle here is step2's model-specific version
+                    # (forbidden = [E_hat, E_star]); the annotation-matched
+                    # control behind SG_gt is the shared forbidden = [E_star]
+                    # one in rand_gt_keep*.json. See step2_segments.py.
                     'r_oracle': s2['r_oracle'],
                     'phase': phase,
                     'preds': preds,

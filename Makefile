@@ -16,6 +16,8 @@ gates: tables
 	$(PY) analysis/c4_iou_high.py
 	$(PY) analysis/c1_gc_sign.py
 	$(PY) analysis/c2_sggt_ci.py
+	$(PY) paper/gen_supp_numbers.py
+	$(PY) analysis/a4_loo_reference.py
 
 # Figures 4, 5, S1 and S2 -- the only images in the repository.
 figures:

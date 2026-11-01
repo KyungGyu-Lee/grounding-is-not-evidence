@@ -115,11 +115,59 @@ python analysis/c1_gc_sign.py
 # 4. Table S2 — components, SG CI and the SG_gt CI for all 24 cells
 python analysis/c2_sggt_ci.py
 #    gate: every SG_gt point estimate and both CI bounds equal figdata to 0.00e+00
+
+# 5. Supplementary scalars build_paper_numbers does not emit: the
+#    measurability-restricted analyses, Table S16, the Table S1 ratio column
+#    and the paired SG difference of Sec. 6.1
+python paper/gen_supp_numbers.py
+#    gate: Spearman(IoU,SG) .091/.166 and .283/.344 over all grounders,
+#          .099/.193 and .281/.338 over the measurable ones; residual random
+#          support 19.0/18.0% and 11.6/12.0%; Table S16 prediction-matched
+#          9.98/10.11% and 3.18/3.28%; the nine SG/SG_gt ratios; and
+#          +.030 [-.015, +.075] for VideoChat-R1 - Qwen2.5-VL on QVH-ME C2
+
+# 6. Table S9 and supp. A.1 — leave-one-reference-model-out
+python analysis/a4_loo_reference.py
+#    gate: the recomputed C1-C3 are set-identical to the released flags, all 32
+#          Table S9 cells, and Qwen2.5-VL C3 SG .187 / .412 off its own reference
 ```
 
-Each of these four scripts **refuses to write anything if its gate fails**
+Each of these scripts **refuses to write anything if its gate fails**
 (`SystemExit` before the first output file). `make verify` runs all of them
 plus a static check that no adapter reads the answer text during grounding.
+
+### Three things the released outputs do not reproduce exactly
+
+1. **The annotation-matched random control is not the `r_oracle` field in
+   `step3.json`.** The paper's SG_gt uses a control sampled with
+   `forbidden = [E*]` only, shared by every model, which is what the released
+   `outputs/{bench}/{model}/rand_gt_keep*.json` carries (identical segments
+   across the three reference models; `gen_supp_numbers.py` asserts this).
+   `supportgain/protocol/step2_segments.py` instead builds `r_oracle` with
+   `forbidden = [E_hat, E*]`, which makes it model-specific, and the
+   `r_oracle` field stored in `step3.json` is that one. Rebuilding the
+   annotation-matched control from `step2_segments.py` or from `step3.json`
+   therefore gives different windows than the paper used. Nothing reported in
+   the paper reads that field.
+
+   A related consequence: Table S16's NExT-GQA annotation-matched row (1.26% /
+   1.31%) is taken over C1 (1,526 questions). The released `rand_gt_keep`
+   covers the 1,507 that have a full-video reference output; the other 19 have
+   `|E*|/T` between .42 and .50, so no length-matched window can avoid `E*` and
+   all five of their draws fall back — they carry 95 of the 96 fallback draws.
+   Over the released questions the rate is .01% / .07%, which is what
+   `gen_supp_numbers.py` gates.
+
+2. **QVH-ME VideoLLaMA2 has two full-video runs that disagree.** On the 565
+   questions both cover, `flags/qvhme/fullvideo_videollama2_shard*.json` and
+   `outputs/qvhme/videollama2/step1.json` give the same prediction for 95.75%
+   of questions (accuracy .492 vs .508). C1-C3 are defined from the `flags/`
+   run. The other four reference-model pairs agree on 100% of questions.
+
+3. **19 NExT-GQA C1 questions never reach C2.** `u` needs a full-video output
+   from all three reference models; 1,507 of the 1,526 C1 questions have one,
+   so the remaining 19 are excluded from C2 by missing data rather than by the
+   `u - b >= 1/3` criterion.
 
 Figures:
 
@@ -144,6 +192,7 @@ python analysis/a1_correctness_conditioned.py   # SG split by answer correctness
 python analysis/a2_threshold_sensitivity.py     # tau_u and tau_rho sweeps
 python analysis/a3_draw_variance.py             # variance across the 5 random draws
 python analysis/b1_analyze.py                   # CROP vs MASK vs MARGIN (cropping control)
+python analysis/a4_loo_reference.py             # leave-one-reference-model-out (Table S9)
 ```
 
 `analysis/b1_requery.py` is the one script here that needs a GPU; its stored
@@ -177,6 +226,9 @@ paper/                  table and figure generation
   build_paper_numbers.py   the single builder for every paper number
   gen_tables.py            -> paper/tables.tex
   gen_aux_numbers.py       the Sec 6.3 scalars that figdata does not carry
+  gen_supp_numbers.py      the supplementary scalars figdata does not carry:
+                           measurability-restricted analyses, Table S16,
+                           the Table S1 ratio column, the Sec 6.1 paired CI
   make_fig4.py make_fig5.py      -> paper/figures/fig4.pdf, fig5.pdf (+ .png)
   figdata_{nextgqa,qvhme}.json   regenerable; shipped so the tables build immediately
 analysis/               camera-ready supplementary analyses, each with its own REPORT.md

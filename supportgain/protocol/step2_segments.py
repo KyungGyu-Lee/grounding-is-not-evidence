@@ -35,6 +35,15 @@ def run(model_name: str, n_random: int = N_RANDOM,
 
         # Random controls must avoid BOTH the model's evidence (E_hat) and the
         # GT evidence (E_star) — PDF §2 overlap control via IoP threshold.
+        #
+        # NOTE for r_oracle: this is NOT the annotation-matched control behind
+        # the paper's SG_gt. That one is sampled with forbidden = [E_star] only
+        # and is therefore SHARED by every model (released as
+        # outputs/{bench}/{model}/rand_gt_keep*.json, identical segments across
+        # models). Forbidding E_hat as well makes r_oracle model-specific, so
+        # regenerating it here gives different windows than the paper used.
+        # Nothing reported in the paper reads this r_oracle. See README,
+        # "Three things the released outputs do not reproduce exactly".
         forbidden = [pred_iv, ora_iv]
 
         if pred_len > 0:
