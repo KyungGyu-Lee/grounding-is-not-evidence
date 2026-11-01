@@ -109,7 +109,7 @@ Ranking is essentially fixed under the $\tau_\rho$ sweep and remains high at $\t
 
 - `sweep.csv` — every setting $\times$ benchmark, all metrics and per-model C3 SG / SG_gt.
 - `table_rho_sweep.tex`, `table_c2_sweep.tex` — single-column, `\scriptsize`, booktabs, self-contained `\begin{table}`…`\end{table}`.
-- `fig_rho_sweep.pdf` (+`.png`) — paper Fig 5 palette (NExT-GQA `#4C72B0`, QVH-ME `#C6803B`), fonts embedded (`pdf.fonttype 42`).
+- `fig_s1_rho_sweep.pdf` (+`.png`) — paper Fig 5 palette (NExT-GQA `#4C72B0`, QVH-ME `#C6803B`), fonts embedded (`pdf.fonttype 42`).
 - `verification.csv` — baseline membership and Table 5/6 checks.
 
 ## LaTeX tables

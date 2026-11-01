@@ -282,9 +282,6 @@ def render_fig(df_rho, per_model_rho):
         ax.plot(xs, [r['meanSG_C3'] for r in sub], color=col, lw=1.8,
                 marker='o', ms=3.2, label=bench, zorder=3)
     ax.axvline(TAU_R_BASE, color='#777777', ls=':', lw=0.9, zorder=1)
-    ax.annotate(r'paper $\tau_{\rho}{=}0.4$', xy=(TAU_R_BASE, ax.get_ylim()[1]),
-                xytext=(-2, -8), textcoords='offset points', ha='right',
-                va='top', fontsize=6, color='#555555')
     ax.set_xlabel(r'C3 threshold $\tau_{\rho}$')
     ax.set_ylabel('mean Support Gain on C3')
     ax.set_xticks(TAU_R_GRID)
@@ -292,10 +289,19 @@ def render_fig(df_rho, per_model_rho):
     ax.set_axisbelow(True)
     for s in ('top', 'right'):
         ax.spines[s].set_visible(False)
-    ax.legend(frameon=False, fontsize=7, loc='upper right')
+    # The legend sits lower left on an opaque patch: at 'upper right' it lay on
+    # the QVH-ME thin lines.
+    ax.legend(loc='lower left', fontsize=7, frameon=True, framealpha=0.9,
+              facecolor='white', edgecolor='none', borderpad=0.3,
+              handlelength=1.6, labelspacing=0.3).set_zorder(5)
+    # The tau label hangs off the bottom of the rule; anchored to the top of the
+    # axes it overlapped a thin line near tau_rho = 0.50.
+    ax.annotate(r'paper $\tau_{\rho}{=}0.4$', xy=(TAU_R_BASE, ax.get_ylim()[0]),
+                xytext=(3, 2), textcoords='offset points', ha='left',
+                va='bottom', fontsize=6, color='#555555', zorder=5)
     fig.tight_layout(pad=0.3)
-    fig.savefig(f'{OUTDIR}/fig_rho_sweep.pdf')
-    fig.savefig(f'{OUTDIR}/fig_rho_sweep.png', dpi=220)
+    fig.savefig(f'{OUTDIR}/fig_s1_rho_sweep.pdf')
+    fig.savefig(f'{OUTDIR}/fig_s1_rho_sweep.png', dpi=220)
     plt.close(fig)
 
 
@@ -506,7 +512,7 @@ def render_report(df_rho, df_c2, per_model_rho, rho_tex, c2_tex, nver):
     R.append('- `sweep.csv` — every setting $\\times$ benchmark, all metrics and per-model '
              'C3 SG / SG_gt.\n- `table_rho_sweep.tex`, `table_c2_sweep.tex` — single-column, '
              '`\\scriptsize`, booktabs, self-contained `\\begin{table}`…`\\end{table}`.\n'
-             '- `fig_rho_sweep.pdf` (+`.png`) — paper Fig 5 palette '
+             '- `fig_s1_rho_sweep.pdf` (+`.png`) — paper Fig 5 palette '
              '(NExT-GQA `#4C72B0`, QVH-ME `#C6803B`), fonts embedded '
              '(`pdf.fonttype 42`).\n- `verification.csv` — baseline membership and '
              'Table 5/6 checks.\n')
@@ -576,7 +582,7 @@ def main():
     open(f'{OUTDIR}/REPORT.md', 'w').write(
         render_report(rows_rho, rows_c2, per_model_rho, rho_tex, c2_tex, nver))
     for f in ('sweep.csv', 'table_rho_sweep.tex', 'table_c2_sweep.tex',
-              'fig_rho_sweep.pdf', 'REPORT.md'):
+              'fig_s1_rho_sweep.pdf', 'REPORT.md'):
         print(f'WROTE {OUTDIR}/{f}')
 
 

@@ -56,6 +56,14 @@ DAG = {'VTimeLLM': r'$^{\dagger}$', 'TimeChat': r'$^{\dagger}$'}
 NOT_INTERPRETED = {'VTimeLLM', 'TimeChat'}
 PALETTE = ['#4C72B0', '#C6803B', '#55A868', '#8172B2', '#C44E52',
            '#64B5CD', '#8C8C8C']
+# Table 6 order, union of the two panels. One shared legend under both panels
+# only works if a model has one colour, so PALETTE is indexed by this order
+# rather than by the model's position within each panel. That also leaves the
+# two non-interpreted models on the two muted entries. No \ddagger: the figure
+# carries only the \dagger marks.
+LEGEND_ORDER = ['Qwen', 'VideoMind', 'GVLLM', 'GroundVTS', 'VideoChat-R1',
+                'TimeChat', 'VTimeLLM']
+MODEL_COLOR = {mk: PALETTE[i] for i, mk in enumerate(LEGEND_ORDER)}
 
 
 # --------------------------------------------------------------- child: dump
@@ -286,6 +294,7 @@ def render_fig(sub):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
     plt.rcParams.update({
         'font.family': 'serif', 'mathtext.fontset': 'cm', 'font.size': 8,
         'axes.linewidth': 0.7, 'axes.edgecolor': '#333333',
@@ -295,13 +304,12 @@ def render_fig(sub):
     s = sub[(sub['set'] == 'C3') & (sub.quantity == 'SG')]
     fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.5), dpi=200)
     for ax, (bench, key) in zip(axes, (('NExT-GQA', 'NExT'), ('QVH-ME', 'QVH'))):
-        for i, mk in enumerate(MODELS[key]):
+        for mk in MODELS[key]:
             m = DISP[mk]
             r = s[(s.bench == bench) & (s.model == m)].sort_values('k')
-            c = PALETTE[i % len(PALETTE)]
+            c = MODEL_COLOR[mk]
             ax.fill_between(r.k, r['min'], r['max'], color=c, alpha=0.18, lw=0)
-            ax.plot(r.k, r['mean'], color=c, lw=1.3, marker='o', ms=2.8,
-                    label=m + ('†' if mk in NOT_INTERPRETED else ''))
+            ax.plot(r.k, r['mean'], color=c, lw=1.3, marker='o', ms=2.8)
         ax.set_title(bench, fontsize=8)
         ax.set_xlabel('number of draws used, $k$')
         ax.set_xticks(range(1, NDRAW + 1))
@@ -310,13 +318,25 @@ def render_fig(sub):
         for sp in ('top', 'right'):
             ax.spines[sp].set_visible(False)
     axes[0].set_ylabel('mean Support Gain on C3')
-    axes[1].legend(frameon=False, fontsize=5.6, loc='best', ncol=2,
-                   handlelength=1.2, columnspacing=0.8)
-    axes[0].legend(frameon=False, fontsize=5.6, loc='best',
-                   handlelength=1.2)
+
+    # One shared legend below both panels; the per-panel 'best' legends sat on
+    # the data lines.
+    handles = [Line2D([], [], color=MODEL_COLOR[mk], lw=1.3, marker='o',
+                      ms=2.8) for mk in LEGEND_ORDER]
+    labels = [DISP[mk] + ('†' if mk in NOT_INTERPRETED else '')
+              for mk in LEGEND_ORDER]
     fig.tight_layout(pad=0.4)
-    fig.savefig(f'{OUTDIR}/fig_draw_subsampling.pdf')
-    fig.savefig(f'{OUTDIR}/fig_draw_subsampling.png', dpi=220)
+    fig.subplots_adjust(bottom=0.30)
+    leg = fig.legend(handles, labels, loc='lower center', ncol=4,
+                     frameon=False, fontsize=5.6, handlelength=1.2,
+                     columnspacing=1.6, bbox_to_anchor=(0.5, 0.005))
+    # the legend must stay inside the page, so that saving without
+    # bbox_inches='tight' keeps the original 6.9 x 2.5 in figure size
+    fig.canvas.draw()
+    bb = leg.get_window_extent().transformed(fig.transFigure.inverted())
+    assert bb.y0 >= 0 and bb.y1 <= 1 and bb.x0 >= 0 and bb.x1 <= 1, bb
+    fig.savefig(f'{OUTDIR}/fig_s2_draw_subsampling.pdf')
+    fig.savefig(f'{OUTDIR}/fig_s2_draw_subsampling.png', dpi=220)
     plt.close(fig)
 
 
@@ -517,7 +537,7 @@ def render_report(sub, dist, ci, verify, tex):
              'unanimity rates.\n'
              '- `table_draw_subsampling.tex` — single-column, `\\scriptsize`, booktabs, '
              'self-contained.\n'
-             '- `fig_draw_subsampling.pdf` (+`.png`) — per-model lines with min--max '
+             '- `fig_s2_draw_subsampling.pdf` (+`.png`) — per-model lines with min--max '
              'shading, fonts embedded (`pdf.fonttype 42`).\n'
              '- `verification.csv` — $k=5$ vs stored canonical values.\n')
 
@@ -561,7 +581,7 @@ def main():
     render_fig(sub)
     open(f'{OUTDIR}/REPORT.md', 'w').write(render_report(sub, dist, ci, verify, tex))
     for f in ('draw_subsampling.csv', 'retrand_distribution.csv', 'ci_comparison.csv',
-              'table_draw_subsampling.tex', 'fig_draw_subsampling.pdf', 'REPORT.md'):
+              'table_draw_subsampling.tex', 'fig_s2_draw_subsampling.pdf', 'REPORT.md'):
         print(f'WROTE {OUTDIR}/{f}')
 
 

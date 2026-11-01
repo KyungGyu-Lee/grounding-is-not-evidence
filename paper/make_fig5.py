@@ -69,9 +69,9 @@ ax.legend(frameon=False, fontsize=7.5, loc='upper left', handlelength=1.1,
           handletextpad=0.5, borderaxespad=0.2, labelspacing=0.3)
 
 fig.subplots_adjust(left=0.155, right=0.985, top=0.965, bottom=0.13)
-fig.savefig(f'{FIGDIR}/fig5_sg_progression.pdf')
-fig.savefig(f'{FIGDIR}/fig5_sg_progression.png', dpi=300)
-print('WROTE paper/figures/fig5_sg_progression.pdf / .png')
+fig.savefig(f'{FIGDIR}/fig5.pdf')
+fig.savefig(f'{FIGDIR}/fig5.png', dpi=300)
+print('WROTE paper/figures/fig5.pdf / .png')
 print('NExT', NEXT, ' QVH', QVH)
 
 PAPER_HARDCODED = {'NExT': [0.023, 0.026, 0.032, 0.124],

@@ -17,10 +17,12 @@ gates: tables
 	$(PY) analysis/c1_gc_sign.py
 	$(PY) analysis/c2_sggt_ci.py
 
+# Figures 4, 5, S1 and S2 -- the only images in the repository.
 figures:
 	$(PY) paper/make_fig4.py
 	$(PY) paper/make_fig5.py
-	$(PY) analysis/c3_figures.py
+	$(PY) analysis/a2_threshold_sensitivity.py
+	$(PY) analysis/a3_draw_variance.py
 
 # RELEASE_PLAN 6.5: grounding is question-conditioned. The only body-level read
 # of `predicted_answer` in any adapter must be the GVLLM_ANSCOND one.

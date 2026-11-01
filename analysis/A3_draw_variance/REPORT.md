@@ -141,7 +141,7 @@ The positive control behaves the same way: going from five to three draws moves 
 - `retrand_distribution.csv` — six-level Ret(rand) and Ret(rand_gt) distribution per cell.
 - `ci_comparison.csv` — draw-level (both variants) vs item-level CIs and unanimity rates.
 - `table_draw_subsampling.tex` — single-column, `\scriptsize`, booktabs, self-contained.
-- `fig_draw_subsampling.pdf` (+`.png`) — per-model lines with min--max shading, fonts embedded (`pdf.fonttype 42`).
+- `fig_s2_draw_subsampling.pdf` (+`.png`) — per-model lines with min--max shading, fonts embedded (`pdf.fonttype 42`).
 - `verification.csv` — $k=5$ vs stored canonical values.
 
 ## LaTeX table

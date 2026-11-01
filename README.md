@@ -124,13 +124,18 @@ plus a static check that no adapter reads the answer text during grounding.
 Figures:
 
 ```bash
-python paper/make_fig4.py            # Fig 4  -> paper/figures/
-python paper/make_fig5.py            # Fig 5  -> paper/figures/   (prints the comparison
-                                     #            against the published values)
-python analysis/a2_threshold_sensitivity.py   # Fig S1
-python analysis/a3_draw_variance.py           # Fig S2
-python analysis/c3_figures.py                 # Fig S1/S2 with the final legend placement
+python paper/make_fig4.py            # Fig 4  -> paper/figures/fig4.pdf  (+ .png)
+python paper/make_fig5.py            # Fig 5  -> paper/figures/fig5.pdf  (+ .png)
+                                     #          (prints the comparison against the
+                                     #           published values)
+python analysis/a2_threshold_sensitivity.py   # Fig S1 -> analysis/A2_threshold_sensitivity/
+                                              #           fig_s1_rho_sweep.pdf (+ .png)
+python analysis/a3_draw_variance.py           # Fig S2 -> analysis/A3_draw_variance/
+                                              #           fig_s2_draw_subsampling.pdf (+ .png)
 ```
+
+`make figures` runs all four. These are the only four images in the
+repository: the paper's Figures 4, 5, S1 and S2, and nothing else.
 
 Supplementary analyses (each self-gating, each writing a `REPORT.md`):
 
@@ -172,9 +177,11 @@ paper/                  table and figure generation
   build_paper_numbers.py   the single builder for every paper number
   gen_tables.py            -> paper/tables.tex
   gen_aux_numbers.py       the Sec 6.3 scalars that figdata does not carry
-  make_fig4.py make_fig5.py
+  make_fig4.py make_fig5.py      -> paper/figures/fig4.pdf, fig5.pdf (+ .png)
   figdata_{nextgqa,qvhme}.json   regenerable; shipped so the tables build immediately
 analysis/               camera-ready supplementary analyses, each with its own REPORT.md
+  A2_threshold_sensitivity/    + Fig S1, fig_s1_rho_sweep.pdf (+ .png)
+  A3_draw_variance/            + Fig S2, fig_s2_draw_subsampling.pdf (+ .png)
 qvhme_build/            how QVH-ME was generated and screened (needs the API key)
 scripts/                shard merging and video download (see scripts/README.md)
 ```
