@@ -3,11 +3,11 @@ Same settings as prior-free runs (greedy adapters, shared QA prompt, N=5 R_oracl
 GT-length forbidden=GT). Saves to *_solv_shard files (pf files untouched).
 
   BENCH=next|qvh  MODEL=qwen25vl|internvl|videollama2  TASK=full|random
-  SHARD NSHARD CUDA_VISIBLE_DEVICES  <env-py> analysis/step2_runner.py
+  SHARD NSHARD CUDA_VISIBLE_DEVICES  <env-py> supportgain/protocol/step2_runner.py
   LIMIT=20  -> consistency probe (prints frames/greedy/forbidden, no full save)
 """
 import sys, os, json, importlib
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import pandas as pd
 

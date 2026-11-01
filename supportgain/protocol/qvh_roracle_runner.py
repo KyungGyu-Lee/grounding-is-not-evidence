@@ -2,10 +2,10 @@
 Per-trial storage + resume. Video = data/qvh_gqa/videos/{video_id}.mp4.
 
   MODEL=videollama2 SHARD=0 NSHARD=4 CUDA_VISIBLE_DEVICES=0 <env-py> \
-    analysis/qvh_roracle_runner.py
+    supportgain/protocol/qvh_roracle_runner.py
 """
 import sys, os, json, importlib
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import pandas as pd
 

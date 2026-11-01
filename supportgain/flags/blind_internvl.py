@@ -4,7 +4,7 @@ pixel_values=None -> pure-text chat. Same normalization / QA prompt / parser
 as the TEF pipeline for consistency with the other blind baselines.
 """
 import sys, os, json
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import torch
 import pandas as pd

@@ -5,7 +5,7 @@ letter. A correct answer here = the sample is solvable by language prior alone.
 Uses the SAME normalization / QA prompt / letter parser as the TEF pipeline.
 """
 import sys, os, json
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import torch
 import pandas as pd

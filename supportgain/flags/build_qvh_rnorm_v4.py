@@ -1,7 +1,7 @@
-"""Build QVH r_norm for a v4 tree: r_norm[vqid] = (r - b)/(u - b) on the
-measurable set C1 (mean3(u-b) > 0.2). Mirrors build_paper_numbers set_masks.
+"""Build QVH rho: rho[vqid] = (r - b)/(u - b) on the answerability set C2
+(mean3(u - b) >= 1/3). Mirrors build_paper_numbers.set_masks.
 
-  ROOT=results_v4 python analysis/build_qvh_rnorm_v4.py
+  ROOT=<tree> python supportgain/flags/build_qvh_rnorm_v4.py
 Reads   {ROOT}/blind/qvh_{qwen25vl,internvl2_5_8b,videollama2_7b}.json  (b)
         {ROOT}/blind/qvh_full_{qwen25vl,internvl,videollama2}_shard*    (u)
         {ROOT}/roracle_keep/qvh_{qwen25vl,internvl,videollama2}_shard*  (r)
@@ -49,7 +49,7 @@ def main():
     for k in basis:
         b, u = bmean(k), umean(k)
         den = u - b
-        if den >= 1/3 - 1e-9:               # C1 measurable: u-b >= 1/3 (== old >0.2; u-b is a multiple of 1/3)
+        if den >= 1/3 - 1e-9:               # C2 answerability: u-b >= 1/3 (u-b is a multiple of 1/3)
             r = rmean(k)
             if not np.isnan(r):
                 rn[k] = (r - b) / den

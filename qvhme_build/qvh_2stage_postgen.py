@@ -8,10 +8,10 @@ qvh_regen_2stage_full. Writes:
   full2/shuffle_map_2stage.json      qid-seeded permutations
   prints GATE_PASS / GATE_FAIL with reasons.
 
-  GEMINI_API_KEY=... <py> analysis/qvh_2stage_postgen.py
+  GEMINI_API_KEY=... <py> qvhme_build/qvh_2stage_postgen.py
 """
 import os, sys, json, csv, re
-_R = os.path.dirname(dirname(os.path.abspath(__file__)))
+_R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, _R)
 import numpy as np
 from collections import Counter

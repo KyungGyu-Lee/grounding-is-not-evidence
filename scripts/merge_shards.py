@@ -4,8 +4,8 @@ Example:
     python scripts/merge_shards.py qwen25vl step1
     python scripts/merge_shards.py qwen25vl phase1/step3
 
-The script looks for ``results/<model>/<rel>_<shard>.json`` files (one
-per GPU) and writes their union to ``results/<model>/<rel>.json``.
+The script looks for ``$RESULTS_DIR/<model>/<rel>_<shard>.json`` files
+(one per GPU) and writes their union to ``$RESULTS_DIR/<model>/<rel>.json``.
 """
 import argparse
 import glob

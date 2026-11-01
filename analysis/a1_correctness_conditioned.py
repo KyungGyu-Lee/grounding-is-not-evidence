@@ -9,19 +9,18 @@ existing scripts are never modified: the canonical per-sample loader
 (`build_paper_numbers.load_samples`) and set definitions (`set_masks`) are
 imported and reused verbatim, so SG / Ret(*) are bit-identical to the paper.
 
-Canonical trees: NExT-GQA = outputs/nextgqa (= results_tsfix), QVH-ME = outputs/qvhme.
-`build_paper_numbers` chdir()s to $BP_CWD at import, so each benchmark is loaded
-in its own child process against a wrapper dir whose results/ -> the right tree.
+Canonical stored outputs: NExT-GQA = outputs/nextgqa, QVH-ME = outputs/qvhme.
+`build_paper_numbers` chdir()s to the repository root at import; each benchmark
+is still loaded in its own child process.
 
-NAMING: build_paper_numbers uses code names that are FLIPPED vs the paper:
-    paper C1 (b<1)        == code 'C2'
-    paper C2 (u-b>=1/3)   == code 'C1'
-    paper C3 (rho<=0.4)   == code 'C3'
+NAMING: build_paper_numbers uses the paper's names throughout:
+    C1 = prior-exclusion (b < 1), C2 = answerability (u - b >= 1/3),
+    C3 = evidence-specificity (rho <= 0.4).
 Everything this script writes uses PAPER naming.
 
 Usage:
-    python analysis/camera_ready/a1_correctness_conditioned.py
-    python analysis/camera_ready/a1_correctness_conditioned.py --dump NExT   # child
+    python analysis/a1_correctness_conditioned.py
+    python analysis/a1_correctness_conditioned.py --dump NExT   # child
 """
 import argparse
 import json
@@ -62,7 +61,7 @@ DAG = {'VTimeLLM': r'$^{\dagger}$', 'TimeChat': r'$^{\dagger}$',
 def dump(bench):
     """Load the canonical per-sample frame + masks for one bench and cache it."""
     sys.path.insert(0, f'{ROOT}/paper')
-    import build_paper_numbers as bpn          # chdir()s to $BP_CWD on import
+    import build_paper_numbers as bpn          # chdir()s to the repo root on import
     df = bpn.load_samples(bench)
     masks, rn = bpn.set_masks(bench)
     os.makedirs(CACHE, exist_ok=True)

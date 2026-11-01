@@ -1,6 +1,6 @@
-"""Build v4 prior_free_subset + roracle_workset from v4 blind (rule identical to
-the 788 build: prior_solvable = all 3 blind baselines correct; prior_free = rest;
-roracle work = all keys)."""
+"""Build the prior-exclusion subset C1 + the rand_gt workset from the stored
+blind results: prior_solvable = all 3 reference models correct blind,
+C1 = the rest; the rand_gt work list is all keys."""
 import os, json
 
 ROOT = os.environ.get('ROOT', 'results_v4')

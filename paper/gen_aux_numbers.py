@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """gen_aux_numbers.py -- reproduce paper scalars that build_paper_numbers does
 NOT emit (IoU-binned answer-reproduction failure, IoU@0.5, VTimeLLM option-A).
-Canonical trees: NExT <- results_v3 (tsfix); QVH <- results_v5. Reads only.
+Reads the stored outputs only (outputs/nextgqa, outputs/qvhme).
 
-  python analysis/gen_aux_numbers.py
+  python paper/gen_aux_numbers.py
 
 Definitions:
   * answer-reproduction failure at IoU>=t = fraction of grounder predictions

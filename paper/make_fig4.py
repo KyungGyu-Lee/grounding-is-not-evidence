@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """Fig 4 (publication redesign, C2-normalized). Data/definitions UNCHANGED.
 rho defined only on C2; y = Share of C2 questions (bars sum to 100% over all rho).
-Canonical stored rho: NExT <- results/shared/next_r_norm.json (=results_v3/tsfix,
-frozen); QVH <- results_v5/shared/qvh_r_norm.json.  No old results/ model tree.
-Does NOT overwrite make_fig4.py / make_fig4_norm.py or any result file.
+Canonical stored rho: NExT <- flags/nextgqa/r_norm.json; QVH <- flags/qvhme/r_norm.json.
 
 Three peak treatments for the NExT rho~1 spike (40.4% of C2):
   A clipped-peak (recommended)  B broken y-axis  C full-axis + zoom inset

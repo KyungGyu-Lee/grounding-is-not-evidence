@@ -1,28 +1,29 @@
 """GT-ceiling positive control: K_GT (keep GT interval) + K_R_gt (keep 5 shared
-R_oracle GT-length random segments) on the MEASURABLE subset.
+GT-length random segments) on the answerability subset C2.
 
-Mirrors analysis/roracle_runner.py EXACTLY (raw CSV question/choices, greedy
-adapters, same predict() dispatch) so the new K_GT/K_R_gt sit on the identical
-measurement basis as the already-stored qwen/baseline K_R_gt that we reuse.
+Mirrors supportgain/protocol/roracle_runner.py EXACTLY (raw CSV
+question/choices, greedy adapters, same predict() dispatch) so the new
+K_GT/K_R_gt sit on the identical measurement basis as the already-stored
+Qwen / reference-model K_R_gt that we reuse.
 
-Segments come ONLY from the shared clean (forbidden=GT-only) files:
-    NExT -> results/shared/r_oracle_shared.json          (1507 >= 1115 measurable)
-    QVH  -> results/shared/qvh_r_oracle_shared.json      (788  >=  419 measurable)
+Segments come ONLY from the shared clean (forbidden=GT-only) files, which cover
+a superset of C2 (NExT-GQA 1507 >= 1116; QVH-ME 788 >= 427).
 oracle_iv (the GT interval the segments were forbidden against) is taken from the
 same shared record so K_GT and the segments share one GT reference.
 
   BENCH=next|qvh  MODEL=<module=dir>  TASK=both|kgt
-  SHARD NSHARD CUDA_VISIBLE_DEVICES  <env-python> analysis/gt_ceiling_runner.py
+  SHARD NSHARD CUDA_VISIBLE_DEVICES  <env-python> \
+    supportgain/protocol/gt_ceiling_runner.py
   LIMIT=20 -> probe: prints n_frames / greedy / forbidden(oracle overlap) and,
               for reuse models, checks K_R_gt determinism vs stored file. No save.
 
 TASK=both : grounders with no stored K_R_gt (VideoMind/GroundVTS/GVLLM/VTimeLLM,
             +TimeChat on QVH) -> compute K_GT and K_R_gt.
-TASK=kgt  : qwen + baselines (InternVL/VideoLLaMA2) -> compute K_GT only
-            (their K_R_gt is reused from *_full.json / qvh_* roracle-keep).
+TASK=kgt  : Qwen + the 2 reference models (InternVL/VideoLLaMA2) -> K_GT only
+            (their K_R_gt is reused from the stored rand_gt_keep files).
 """
 import sys, os, json, time, importlib
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import pandas as pd
 
@@ -35,7 +36,7 @@ OUT = f'{OUTDIR}/{BENCH}_{MODEL}_shard{SHARD}.json'
 
 
 def load_bench():
-    """Return (measurable_ids_sorted, shared_segments, vp(vqid), meta(vqid))."""
+    """Return (C2_ids_sorted, shared_segments, vp(vqid), meta(vqid))."""
     if BENCH == 'qvh':
         meas = list(json.load(open(os.environ.get('QVH_RNORM','results/shared/qvh_r_norm.json')))['r_norm'])
         sh = json.load(open('results/shared/qvh_r_oracle_shared.json'))

@@ -1,7 +1,7 @@
 """Full-video GT-accuracy for a baseline (1 inference/question, whole video).
 Reference point for the blind < random < full sanity check. Sharded + resume."""
 import sys, os, json, importlib
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import pandas as pd
 from supportgain.config.settings import VID_MAP_JSON, VIDEO_DIR

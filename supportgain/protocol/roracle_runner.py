@@ -2,13 +2,13 @@
 judged on GT-correctness. Per-question x per-model x per-trial storage + resume.
 
   MODEL=videollama2 TAG=pilot N_LIMIT=100 SHARD=0 NSHARD=1 \
-    CUDA_VISIBLE_DEVICES=0 <env-python> analysis/roracle_runner.py
+    CUDA_VISIBLE_DEVICES=0 <env-python> supportgain/protocol/roracle_runner.py
 
 Segments come ONLY from results/shared/r_oracle_shared.json (never regenerated).
 Blind is NOT touched. Decoding is greedy (adapters enforce do_sample=False).
 """
 import sys, os, json, time, random, importlib
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import pandas as pd
 from supportgain.config.settings import VID_MAP_JSON, VIDEO_DIR

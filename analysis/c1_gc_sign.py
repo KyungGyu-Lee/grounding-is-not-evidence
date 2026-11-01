@@ -17,19 +17,18 @@ particular the IoP fallback for an empty or unparsed predicted window is
 whatever step 1 stored (NaN there fails `iop >= 0.5` and the question simply
 is not grounded-correct).
 
-`build_paper_numbers` chdir()s to $BP_CWD at import, so each benchmark is
-loaded in its own child process against a wrapper dir whose results/ points at
-the canonical tree (NExT-GQA = outputs/nextgqa, QVH-ME = outputs/qvhme).
+`build_paper_numbers` chdir()s to the repository root at import and reads the
+stored outputs (NExT-GQA = outputs/nextgqa, QVH-ME = outputs/qvhme); each
+benchmark is still loaded in its own child process.
 
-NAMING: build_paper_numbers' code names are FLIPPED vs the paper:
-    paper C1 (b<1)       == code 'C2'
-    paper C2 (u-b>=1/3)  == code 'C1'
-    paper C3 (rho<=0.4)  == code 'C3'
-Everything written here uses PAPER naming.
+NAMING: build_paper_numbers uses the paper's names throughout:
+    C1 = prior-exclusion (b < 1), C2 = answerability (u - b >= 1/3),
+    C3 = evidence-specificity (rho <= 0.4).  CODE_SET below is the identity
+map, kept so the paper-side and figdata-side names stay visibly paired.
 
 Usage:
-    python analysis/camera_ready/c1_gc_sign.py
-    python analysis/camera_ready/c1_gc_sign.py --dump NExT   # child
+    python analysis/c1_gc_sign.py
+    python analysis/c1_gc_sign.py --dump NExT   # child
 """
 import argparse
 import json
@@ -103,7 +102,7 @@ PAPER_UGA_RANGE = {'NExT': (0.32, 0.52), 'QVH': (0.14, 0.36)}
 # --------------------------------------------------------------- child: dump
 def dump(bench):
     sys.path.insert(0, f'{ROOT}/paper')
-    import build_paper_numbers as bpn          # chdir()s to $BP_CWD on import
+    import build_paper_numbers as bpn          # chdir()s to the repo root on import
     df = bpn.load_samples(bench)
     masks, _ = bpn.set_masks(bench)
     os.makedirs(CACHE, exist_ok=True)

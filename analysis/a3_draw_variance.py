@@ -16,13 +16,12 @@ C(5,k) subsets, and the bootstrap in (c) resamples draw indices with
 replacement, so every reported quantity is invariant to any permutation of the
 five draw slots.
 
-NAMING: code set names in build_paper_numbers are FLIPPED vs the paper
-(paper C1 == code 'C2', paper C2 == code 'C1', paper C3 == code 'C3').
-This script writes PAPER naming.
+NAMING: build_paper_numbers uses the paper's names throughout
+(C1 prior-exclusion, C2 answerability, C3 evidence-specificity).
 
 Usage:
-    python analysis/camera_ready/a3_draw_variance.py
-    python analysis/camera_ready/a3_draw_variance.py --dump NExT    # child
+    python analysis/a3_draw_variance.py
+    python analysis/a3_draw_variance.py --dump NExT    # child
 """
 import argparse
 import itertools
@@ -62,7 +61,7 @@ PALETTE = ['#4C72B0', '#C6803B', '#55A868', '#8172B2', '#C44E52',
 # --------------------------------------------------------------- child: dump
 def dump(bench):
     sys.path.insert(0, f'{ROOT}/paper')
-    import build_paper_numbers as bpn          # chdir()s to $BP_CWD on import
+    import build_paper_numbers as bpn          # chdir()s to the repo root on import
     masks, _ = bpn.set_masks(bench)
     rows, gtrows = [], []
     for disp, dr in bpn.GROUNDERS[bench]:

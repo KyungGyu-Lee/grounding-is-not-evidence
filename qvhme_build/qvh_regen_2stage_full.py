@@ -14,10 +14,10 @@ Robustness:
     completed query_ids are skipped.
   * ALL raw responses saved under full2/raw/.
 
-  GEMINI_API_KEY=... <py> analysis/qvh_regen_2stage_full.py
+  GEMINI_API_KEY=... <py> qvhme_build/qvh_regen_2stage_full.py
 """
 import os, sys, json, time, re, random
-_R = os.path.dirname(dirname(os.path.abspath(__file__)))
+_R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, _R)
 from google import genai
 from google.genai import types

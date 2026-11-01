@@ -16,15 +16,13 @@ verbatim. Per-question b and u are rebuilt by mirroring the exact lines of
 baseline setting (1/3, 0.4) is asserted to reproduce the STORED masks by set
 equality before any sweep value is reported.
 
-NAMING: build_paper_numbers code names are FLIPPED vs the paper:
-    paper C1 (b<1)       == code 'C2'
-    paper C2 (u-b>=tau_u)== code 'C1'
-    paper C3 (rho<=tau_r)== code 'C3'
-This script uses PAPER naming in everything it writes.
+NAMING: build_paper_numbers uses the paper's names throughout:
+    C1 = prior-exclusion (b < 1), C2 = answerability (u - b >= tau_u),
+    C3 = evidence-specificity (rho <= tau_r).
 
 Usage:
-    python analysis/camera_ready/a2_threshold_sensitivity.py
-    python analysis/camera_ready/a2_threshold_sensitivity.py --dump NExT   # child
+    python analysis/a2_threshold_sensitivity.py
+    python analysis/a2_threshold_sensitivity.py --dump NExT   # child
 """
 import argparse
 import itertools
@@ -68,7 +66,7 @@ C_NEXT, C_QVH = '#4C72B0', '#C6803B'          # paper Fig 5 palette
 # --------------------------------------------------------------- child: dump
 def dump(bench):
     sys.path.insert(0, f'{ROOT}/paper')
-    import build_paper_numbers as bpn          # chdir()s to $BP_CWD on import
+    import build_paper_numbers as bpn          # chdir()s to the repo root on import
     df = bpn.load_samples(bench)
     masks, rn = bpn.set_masks(bench)
 

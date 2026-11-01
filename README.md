@@ -12,6 +12,15 @@ The code to *re-run* the models is here too (`supportgain/`), for anyone who
 wants to add a model or re-derive the stored outputs; that path does need GPUs,
 the videos, and the upstream model repositories.
 
+One caveat for that path. The four protocol steps write wherever `$RESULTS_DIR`
+points, but the auxiliary runners that *built* the measurability inputs —
+`supportgain/protocol/{gt_ceiling,roracle,qvh_roracle,step2}_runner.py`,
+`supportgain/flags/{fullvideo_acc,qvh_fullvideo,build_next_rnorm,build_qvh_rnorm_v4,build_v4_priorfree_workset}.py`
+and `qvhme_build/qvh_shuf_*.py` — still read the original run's directory layout
+(`results/...`, `ROOT=results_v*`) instead of `outputs/` and `flags/`. Everything
+they produced ships here, so nothing under [Reproduction](#reproduction) calls
+them; adapt their paths if you want to rebuild those inputs from scratch.
+
 ---
 
 ## What the paper measures
@@ -33,7 +42,7 @@ and compare each answer with the model's own full-video answer $a_\text{full}$:
 $$\mathrm{SG} \;=\; \mathrm{Ret(pred)} - \mathrm{Ret(rand)}$$
 
 A positive control replaces $\hat{E}$ with the ground-truth window:
-$\mathrm{SG_{gt}} = \mathrm{Ret(gt)} - \mathrm{Ret(rand\text{-}gt)}$. A model
+$\mathrm{SG_{gt}} = \mathrm{Ret(gt)} - \mathrm{Ret(rand\_gt)}$. A model
 whose positive control is not positive is marked $\dagger$ and its SG is not
 interpreted.
 
@@ -156,7 +165,7 @@ outputs/                stored per-question model outputs — the reproduction d
   qvhme/<model>/        step3.json (blind / keep / remove / 5 random draws)
                         gt_ceiling_shard*.json (positive control, Ret(gt))
                         rand_gt_keep*.json — only under the three reference models
-                        (qwen25vl, internvl, videollama2): Ret(rand-gt) is reused
+                        (qwen25vl, internvl, videollama2): Ret(rand_gt) is reused
                         from their stored runs, while every other model takes it
                         from its own gt_ceiling record
 paper/                  table and figure generation
@@ -317,7 +326,8 @@ Source videos and NExT-GQA annotations keep their original licenses — see
   title     = {Grounding is Not Evidence: Measuring Evidence Support in Grounded
                Video Question Answering},
   author    = {Lee, Kyunggyu and Jung, Jiyoung},
-  booktitle = {IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  booktitle = {Proceedings of the IEEE/CVF Winter Conference on Applications of
+               Computer Vision (WACV)},
   year      = {2027}
 }
 ```

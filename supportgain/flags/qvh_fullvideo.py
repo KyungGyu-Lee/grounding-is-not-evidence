@@ -1,11 +1,11 @@
-"""QVH-GQA full-video GT-accuracy for a baseline (prior-free 621, whole video).
+"""QVH-ME full-video GT-accuracy for a reference model (whole video).
 Reuses shared QA prompt (matches blind). Sharded + resume.
 
   MODEL=videollama2 SHARD=0 NSHARD=1 CUDA_VISIBLE_DEVICES=0 <env-py> \
-    analysis/qvh_fullvideo.py
+    supportgain/flags/qvh_fullvideo.py
 """
 import sys, os, json, importlib
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import pandas as pd
 

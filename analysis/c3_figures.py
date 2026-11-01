@@ -2,8 +2,8 @@
 
 Re-renders
 
-  * Fig S1  fig_rho_sweep.pdf        (from A2, analysis/camera_ready/a2_threshold_sensitivity.py)
-  * Fig S2  fig_draw_subsampling.pdf (from A3, analysis/camera_ready/a3_draw_variance.py)
+  * Fig S1  fig_rho_sweep.pdf        (from A2, analysis/a2_threshold_sensitivity.py)
+  * Fig S2  fig_draw_subsampling.pdf (from A3, analysis/a3_draw_variance.py)
 
 with the legends moved off the data lines.  NOTHING is recomputed: the numbers
 are read back out of the CSVs the two A-stage scripts wrote in the same run

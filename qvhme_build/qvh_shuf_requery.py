@@ -2,10 +2,10 @@
 on the SHUFFLED QVH-ME 788, for one model. Full-video QA on the shuffled option
 order. Writes results/qvh_shuf/requery_{MODEL}.json {vqid:{pred,...}}.
 
-  MODEL=qwen25vl|internvl|vtimellm  CUDA_VISIBLE_DEVICES=k  <env-py> analysis/qvh_shuf_requery.py
+  MODEL=qwen25vl|internvl|vtimellm  CUDA_VISIBLE_DEVICES=k  <env-py> qvhme_build/qvh_shuf_requery.py
 """
 import os, sys, json, csv, importlib
-_R = os.path.dirname(dirname(os.path.abspath(__file__)))
+_R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, _R)
 from supportgain.config.prompts import normalize_question, normalize_option
 

@@ -20,18 +20,18 @@ same code path as the paper:
     cut's full sorted vqid list once, shared across models, and take the
     nanmean of each model's SG. Recomputed here purely as a reproduction gate.
 
-`build_paper_numbers` chdir()s to $BP_CWD at import, so each benchmark is
-loaded in its own child process against a wrapper dir whose results/ points at
-the canonical tree (NExT-GQA = outputs/nextgqa, QVH-ME = outputs/qvhme).
+`build_paper_numbers` chdir()s to the repository root at import and reads the
+stored outputs (NExT-GQA = outputs/nextgqa, QVH-ME = outputs/qvhme); each
+benchmark is still loaded in its own child process.
 
-NAMING: code names are FLIPPED vs the paper:
-    paper C2 (u-b>=1/3) == code 'C1'
-    paper C3 (rho<=0.4) == code 'C3'
-Everything written here uses PAPER naming.
+NAMING: build_paper_numbers uses the paper's names throughout:
+    C2 = answerability (u - b >= 1/3), C3 = evidence-specificity (rho <= 0.4).
+CODE_SET below is the identity map, kept so the paper-side and figdata-side
+names stay visibly paired.
 
 Usage:
-    python analysis/camera_ready/c2_sggt_ci.py
-    python analysis/camera_ready/c2_sggt_ci.py --dump NExT   # child
+    python analysis/c2_sggt_ci.py
+    python analysis/c2_sggt_ci.py --dump NExT   # child
 """
 import argparse
 import json
@@ -90,7 +90,7 @@ CI_TOL = 1.5e-3                       # bootstrap last-digit slack
 # --------------------------------------------------------------- child: dump
 def dump(bench):
     sys.path.insert(0, f'{ROOT}/paper')
-    import build_paper_numbers as bpn          # chdir()s to $BP_CWD on import
+    import build_paper_numbers as bpn          # chdir()s to the repo root on import
     df = bpn.load_samples(bench)
     masks, _ = bpn.set_masks(bench)
     os.makedirs(CACHE, exist_ok=True)

@@ -6,7 +6,7 @@ A model adapter encapsulates everything *model-specific*:
   - how to ask QA, and
   - how to ask for a temporal interval.
 
-The protocol scripts (pipeline/) only talk to the adapter via this
+The protocol scripts (supportgain/protocol/) only talk to the adapter via this
 interface, so adding a new model requires no changes to the pipeline.
 """
 from abc import ABC, abstractmethod

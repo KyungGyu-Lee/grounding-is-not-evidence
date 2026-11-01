@@ -4,7 +4,7 @@ mm_infer(None, prompt, ..., modal='text') -> pure-text answer. Same
 normalization / QA prompt / parser as the other blind baselines.
 """
 import sys, os, json
-_R = os.path.dirname(dirname(dirname(os.path.abspath(__file__))))
+_R = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, _R)
 import pandas as pd
 from videollama2 import model_init, mm_infer

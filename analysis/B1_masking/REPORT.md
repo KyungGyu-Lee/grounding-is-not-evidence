@@ -199,6 +199,6 @@ outputs/camera_ready/B1_masking/
 ├── table_b1.tex           one-column, \scriptsize, booktabs, self-contained
 ├── zero_frame_windows.json
 ├── responses_{mask,margin}.jsonl   1446 rows each (merged, verified in B1-1)
-├── inputs.jsonl, 00_plan.md, preview/
-analysis/camera_ready/{b1_build_inputs,b1_requery,b1_merge_check,b1_analyze}.py
+├── inputs.jsonl
+analysis/{b1_build_inputs,b1_requery,b1_merge_check,b1_analyze}.py
 ```

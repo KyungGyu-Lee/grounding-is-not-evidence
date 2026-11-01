@@ -4,7 +4,7 @@ variants of the Keep intervention.
 Nothing about the protocol changes except how the window is applied to the
 decoded frame stack. The prompt, the greedy decode and the A-E parsing are the
 pipeline's own: we call `adapter.predict_qa`, which is exactly what
-`pipeline/step3_intervention.py` calls, and the transform is the pipeline's own
+`supportgain/protocol/step3_intervention.py` calls, and the transform is the pipeline's own
 `utils.interventions.apply_intervention`:
 
     CROP   (paper, stored)  phase2 'keep'  on the stored window
@@ -23,15 +23,15 @@ frames, so Ret(none) is shared by all three conditions.
 Usage
 -----
     # preview only, no model, no GPU
-    python analysis/camera_ready/b1_requery.py --preview 3
+    python analysis/b1_requery.py --preview 3
 
     # smoke test: 10 questions, 1 GPU, both variants
-    CUDA_VISIBLE_DEVICES=0 python analysis/camera_ready/b1_requery.py \
+    CUDA_VISIBLE_DEVICES=0 python analysis/b1_requery.py \
         --shard 0 --nshard 1 --limit 10 --tag smoke
 
     # full run: one process per GPU
     for g in 0 1 2 3; do CUDA_VISIBLE_DEVICES=$g python \
-        analysis/camera_ready/b1_requery.py --shard $g --nshard 4 & done
+        analysis/b1_requery.py --shard $g --nshard 4 & done
 
 Resumable: a (vqid, variant, window_type) already on disk is skipped.
 """

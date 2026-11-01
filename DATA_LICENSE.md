@@ -24,7 +24,7 @@ in this repository.
 ## NExT-GQA
 
 Questions, answers and temporal annotations come from **NExT-GQA** (Xiao et
-al., CVPR 2023), built on **NExT-QA** (Xiao et al., CVPR 2021) over VidOR
+al., CVPR 2024), built on **NExT-QA** (Xiao et al., CVPR 2021) over VidOR
 videos. Obtain them from the authors and follow their terms:
 
 > https://github.com/doc-doc/NExT-GQA

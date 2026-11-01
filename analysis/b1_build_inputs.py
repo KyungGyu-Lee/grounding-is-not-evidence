@@ -4,15 +4,13 @@ Reads STORED Qwen2.5-VL QVH-ME results only (no model, no GPU, no new random
 sampling): the C3 membership from `set_masks('QVH')` and, per question, the
 predicted interval and the five stored random windows from
 
-    results/qvh/qwen25vl/phase2/step3.json      ('predicted_iv', 'r_pred')
+    outputs/qvhme/qwen25vl/step3.json           ('predicted_iv', 'r_pred')
 
 Emits one line per re-query:  241 questions x (1 pred + 5 rand) x 2 variants
 = 2892 queries, so CROP (stored) and MASK/MARGIN pair up question-by-question
 AND window-by-window.
 
-Run against a wrapper dir whose results/ points at the v5 tree:
-
-        python analysis/camera_ready/b1_build_inputs.py
+        python analysis/b1_build_inputs.py
 """
 import json
 import os
@@ -22,7 +20,7 @@ import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, f'{ROOT}/paper')
-import build_paper_numbers as bpn  # noqa: E402  (chdir()s to $BP_CWD)
+import build_paper_numbers as bpn  # noqa: E402  (chdir()s to the repo root)
 
 sys.path.insert(0, ROOT)
 from supportgain.config.prompts import normalize_option  # noqa: E402

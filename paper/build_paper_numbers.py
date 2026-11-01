@@ -4,30 +4,31 @@ Replaces the two builder-less static artifacts (figdata.json, master_*.csv) and
 pins every previously-inline analysis to one script. READS stored per-question
 results only; never re-runs a model.
 
+Paths below are repo-relative; {bench} is nextgqa or qvhme.
+
 INPUTS (stored values only):
-  results/{model}/phase2/step3.json            (NExT, per grounder+baseline)
-  results/qvh/{model}/phase2/step3.json        (QVH)
-  results/{model}/step1.json  (+qvh)           iou/iop/a_full
-  results/gt_ceiling/{bench}_{model}_shard*.json
-  results/blind/{qwen25vl,internvl2_5_8b,videollama2_7b}.json (+qvh_*)  3-baseline blind
-  results/roracle_keep/{internvl,videollama2}_fullvideo_shard*.json     3-baseline full (NExT)
-  results/blind/qvh_full_{qwen25vl,internvl,videollama2}_shard*.json    3-baseline full (QVH)
-  results/roracle_keep/{qwen25vl,internvl,videollama2}_full.json        K_R_gt reuse (NExT)
-  results/roracle_keep/qvh_{qwen25vl,internvl,videollama2}_shard*.json  K_R_gt reuse (QVH)
-  results/shared/next_r_norm.json, qvh_r_norm.json                      C1 membership + r_norm
-  data/val_full_strict.csv, data/qvh_gqa/val_qvh_gqa_screened.csv       choices (unused numeric)
+  outputs/{bench}/{model}/step3.json            per grounder + reference model
+  outputs/{bench}/{model}/step1.json            iou/iop/a_full
+  outputs/{bench}/{model}/gt_ceiling_shard*.json            K_GT / Ret(rand_gt)
+  outputs/{bench}/{qwen25vl,internvl,videollama2}/rand_gt_keep*.json
+                                                Ret(rand_gt) reuse (3 reference)
+  flags/{bench}/blind_{qwen25vl,internvl2_5_8b,videollama2_7b}.json      b
+  flags/{bench}/fullvideo_{model}_shard*.json                            u
+  flags/{bench}/r_norm.json                     C2 membership + rho
 
-OUTPUT (never overwrites originals):
-  results/figures/figdata_v2.json
-  results/final_tables/master_next_v2.csv, master_qvh_v2.csv
+OUTPUT:
+  paper/figdata_{bench}.json
+  paper/tables/master_{bench}.csv, paper/tables/ablation_table2_*.csv
 
-SET DEFINITIONS (benchmark-level, single function `set_masks`):
-  ALL = all step3 vqids (2268 / 788)
-  C2  = prior-excluded  : mean3(blind_correct_vs_GT) < 1.0     (1526 / 621)
-  C1  = measurable      : mean3(full_correct - blind_correct) > 0.2  (1115 / 419)
+SET DEFINITIONS (benchmark-level, single function `set_masks`; PAPER naming,
+NExT-GQA / QVH-ME):
+  ALL = all step3 vqids                                        (2268 / 763)
+  C1  = prior-exclusion     : mean3(blind correct) < 1.0       (1526 / 560)
+  C2  = answerability       : mean3(u - b) >= 1/3              (1116 / 427)
         (verified == stored r_norm keys; assertion in code)
-  C3  = C1 AND r_norm < C3_THRESHOLD                            (249 / 212)
-  3-baseline = Qwen2.5-VL + InternVL2.5-8B + VideoLLaMA2-7B.
+  C3  = evidence-specificity: C2 AND rho <= C3_THRESHOLD        (248 / 241)
+  Nested: C3 subset of C2 subset of C1.
+  3 reference models = Qwen2.5-VL + InternVL2.5-8B + VideoLLaMA2-7B.
   ** Percentile (bottom-N%) cuts are NOT used ** — a 30% cut landed on the
   r_norm=0.6 tie mass (71 tied), which produced the 0.105/0.0994/0.101 triple
   mismatch. A fixed threshold removes that ambiguity.
@@ -40,8 +41,8 @@ MISSING / NaN POLICY:
     (bins / Spearman / IoP=1.00 / dIoP pairs), still used for SG/components.
   * K = agreement with the model's OWN a_full (grounder: step1 a_full;
     baseline: full-video pred).  correct = 1[a_full == answer_id].
-  * K_GT/K_R_gt from gt_ceiling; Qwen & the two baselines reuse stored roracle
-    keep for K_R_gt (byte-identical, determinism verified previously).
+  * K_GT/K_R_gt from gt_ceiling; Qwen & the two reference models reuse the
+    stored rand_gt_keep for K_R_gt (byte-identical, determinism verified).
   * Bootstrap: resample vqids WITH REPLACEMENT, seed=0, B=5000; paired = one
     resample shared across models.
   * Every reported quantity carries its N.  Model averages given BOTH as
@@ -269,7 +270,10 @@ def compute(bench, df, masks, rn):
             per_model={m: (float(gA[gA.model == m].SG.mean())
                            if len(gA[gA.model == m]) else None) for m in G},
             N_per_model={m: int(len(gA[gA.model == m])) for m in G})
-    for cut in ['C2', 'C3']:
+    # 'ALL' is carried through the SAME code path as C2/C3 so the audit table
+    # (IoP=1.00 block, Spearman) has an unfiltered column; nothing downstream
+    # reads out['ALL'] except that table, and out['C2']/out['C3'] are untouched.
+    for cut in ['ALL', 'C2', 'C3']:
         ids = masks[cut]
         g = df[(df.vqid.isin(ids)) & (df.model.isin(G))]
         gb = df[(df.vqid.isin(ids)) & (df.model.isin(ALLM))]
