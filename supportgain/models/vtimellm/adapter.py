@@ -4,13 +4,13 @@ VTimeLLM = ViT-Time-LLM (arxiv:2311.18445). CLIP ViT-L/14 encodes a fixed
 budget of 100 uniformly-sampled frames into a feature sequence that feeds a
 Vicuna decoder via a learned mm-projector + two LoRA stages.
 
-TEF integration (aligned with MODEL_SETUP_GUIDE + the other adapters):
+Integration (same adapter contract as the other adapters):
 - FIXED frame budget (100) -> keep/remove interventions are done at the
   VIDEO-PATH level (crop the evidence window with ffmpeg, then re-sample 100
   frames from the crop), NOT by subsetting the 100 full-video frames. This
   keeps the model in-distribution (always 100 frames) and gives a dense view
   of the evidence -- same rationale as VideoMind / GVLLM.
-- QA prompt: SHARED (configs.prompts.build_qa_prompt), letter parsed by the
+- QA prompt: SHARED (supportgain.config.prompts.build_qa_prompt), parsed by the
   shared parser.
 - Grounding: SHARED GROUNDING_CORE (question-conditioned, NO answer leak) with
   VTimeLLM's native output format (two 0..99 frame indices "from X to Y",

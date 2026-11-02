@@ -36,7 +36,8 @@ def _video_path_for(vqid_meta, vid_map, video_dir):
 
 
 def self_labels(n_random):
-    """step3 labels consumed by Self-CTEF (E_hat + R_pred + blind diagnostic)."""
+    """step3 labels for Support Gain on the predicted window
+    (E_hat + R_pred + the blind re-query)."""
     out = ['blind', 'predicted_keep', 'predicted_remove']
     for k in range(n_random):
         out += [f'r_pred_keep_{k}', f'r_pred_remove_{k}']
@@ -44,7 +45,8 @@ def self_labels(n_random):
 
 
 def gt_labels(n_random):
-    """step3 labels additionally consumed by GT-CTEF (E_star + R_oracle)."""
+    """step3 labels the positive control additionally needs
+    (annotated window E_star + R_oracle)."""
     out = ['oracle_keep', 'oracle_remove']
     for k in range(n_random):
         out += [f'r_oracle_keep_{k}', f'r_oracle_remove_{k}']
@@ -99,8 +101,9 @@ def run(adapter, model_name: str, phase: str = 'phase1',
         adapter.begin_step3()
 
     # Which metric families to run this pass. 'all' = self + gt (default).
-    # Splitting lets you run Self-CTEF (self) first and top-up GT-CTEF (gt)
-    # later without recomputing the self inferences — see label-level merge.
+    # Splitting lets you run the predicted-window family (self) first and
+    # top-up the positive-control family (gt) later without recomputing the
+    # self inferences — see label-level merge.
     if families in (None, 'all'):
         fam_set = {'self', 'gt'}
     elif isinstance(families, str):

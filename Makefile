@@ -26,7 +26,7 @@ figures:
 	$(PY) analysis/a2_threshold_sensitivity.py
 	$(PY) analysis/a3_draw_variance.py
 
-# RELEASE_PLAN 6.5: grounding is question-conditioned. The only body-level read
-# of `predicted_answer` in any adapter must be the GVLLM_ANSCOND one.
+# Question-conditioned grounding check: the only body-level read of
+# `predicted_answer` in any adapter must be the GVLLM_ANSCOND one.
 static:
 	$(PY) tools/check_no_answer_leak.py

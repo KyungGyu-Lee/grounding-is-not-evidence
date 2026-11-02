@@ -1,6 +1,6 @@
 """TEF adapter for Grounded-VideoLLM (Phi-3.5 backbone).
 
-Design (per TEF MODEL_SETUP_GUIDE + project decisions):
+Design (same adapter contract as every other model in supportgain/models/):
   * QA (1st)        : SHARED MCQ prompt (build_qa_prompt), letter output,
                       common parser — identical across all models.
   * Grounding (2nd) : SHARED instruction (GROUNDING_CORE, question-conditioned)

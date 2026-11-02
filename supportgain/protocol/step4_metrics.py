@@ -1,8 +1,9 @@
 """Step 4: Metric computation.
 
-Reads step1 + step3 JSONs, normalizes records into the shape expected
-by utils.metrics.compute_all(), and saves the metric dict to
-results/<model>/<phase>/step4_metrics.json.
+Reads step1 + step3 JSONs, normalizes records into the shape expected by
+supportgain.core.metrics.compute_all(), and saves the metric dict to
+results/<model>/<phase>/step4_metrics.json. This is the older step-4 metric
+suite; no paper number comes from it (see supportgain/core/metrics.py).
 """
 import json
 import os
@@ -33,7 +34,7 @@ def _guard(metric_dict, records):
 
 
 def _normalize_records(step1, step3):
-    """Build per-sample records of the shape utils.metrics expects."""
+    """Build per-sample records of the shape supportgain.core.metrics expects."""
     out = []
     for vqid, s3 in step3.items():
         if 'error' in s3 or 'preds' not in s3:

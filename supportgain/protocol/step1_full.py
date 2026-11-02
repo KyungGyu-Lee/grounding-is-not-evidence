@@ -99,12 +99,13 @@ def run(adapter, model_name: str, start: int = 0, end: int = -1,
                 a_full, full_raw = adapter.predict_qa(frames, question, choices)
 
             # Question-conditioned grounding: the predicted answer is NOT used
-            # for grounding (RQ1 — evidence is predicted from the question only).
+            # for grounding — evidence is predicted from the question only.
             # pred_text is still passed for adapter-contract compatibility but
-            # adapters must ignore it (see configs/prompts.build_grounding_prompt).
-            # RELEASE_PLAN 6.5 — the grounding call is question-conditioned,
-            # so the answer text is NOT handed to the adapter by default.
-            # It is filled only for the answer-conditioned ablation.
+            # adapters must ignore it (see
+            # supportgain/config/prompts.py:build_grounding_prompt). The
+            # question-conditioned grounding check (`make static`,
+            # tools/check_no_answer_leak.py) enforces that; the answer text is
+            # filled only for the answer-conditioned ablation below.
             pred_text = None
             if os.environ.get('GVLLM_ANSCOND') == '1':
                 pred_text = choices[a_full] if 0 <= a_full < 5 else answer_norm

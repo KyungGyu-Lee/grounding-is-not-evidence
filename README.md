@@ -2,11 +2,15 @@
 
 **WACV 2027** · Kyunggyu Lee, Jiyoung Jung · University of Seoul
 
-This repository reproduces every number, table and figure in the paper **from
-stored per-question model outputs**. No model is re-run, no GPU is needed, and
-no video is downloaded. The four commands in [Reproduction](#reproduction)
-regenerate `paper/tables.tex` byte-for-byte and Figures 4, 5, S1 and S2
-pixel-for-pixel.
+This repository reproduces the paper's results — Tables 2-8, the supplementary
+tables, and Figures 4, 5, S1 and S2 — **from stored per-question model
+outputs**. No model is re-run, no GPU is needed, and no video is downloaded.
+`make verify` (or the commands in [Reproduction](#reproduction)) regenerates
+`paper/tables.tex` byte-for-byte, and `make figures` redraws the four figures
+pixel-for-pixel. Table 1 quotes published figures from the cited papers rather
+than measurements of ours, and the few exceptions among the rest are listed
+under [Three things the released outputs do not reproduce
+exactly](#three-things-the-released-outputs-do-not-reproduce-exactly).
 
 The code to *re-run* the models is here too (`supportgain/`), for anyone who
 wants to add a model or re-derive the stored outputs; that path does need GPUs,
@@ -259,6 +263,37 @@ qvhme_build/            how QVH-ME was generated and screened (needs the API key
 scripts/                shard merging and video download (see scripts/README.md)
 ```
 
+### Legacy key names
+
+The keys inside the stored files predate the paper's notation and are left
+untouched, so that the shipped JSON and CSV stay readable by the code that
+wrote them. The mapping:
+
+| key in `outputs/`, `flags/`, `paper/figdata_*.json`, `paper/tables/*.csv` | paper |
+|---|---|
+| `Kbl`, `K_blind` | $\mathrm{Ret(none)}$ |
+| `KR`, `K_R` | $\mathrm{Ret(rand)}$ |
+| `KE`, `K_E` | $\mathrm{Ret(pred)}$ |
+| `KGT`, `K_GT`, `kgt` | $\mathrm{Ret(gt)}$ |
+| `KRG`, `K_R_gt`, `krgt` | $\mathrm{Ret(rand\_gt)}$ |
+| `SG`, `SG_pred` | SG |
+| `SG_GT` | $\mathrm{SG_{gt}}$ |
+| `ESR` | evidence support ratio |
+| `N_grounded_correct` | $N_{gc}$ |
+| `SGA` | share of grounded-correct answers with $\mathrm{SG} > 0$ |
+| `UGA_A_eq0`, `UGA_B_lt0`, `UGA_total` | $\textsc{uga}_{=0}$, $\textsc{uga}_{<0}$, and their sum ($\mathrm{SG} \le 0$) |
+| `predicted_iv`, `oracle_iv` | $\hat{E}$, $E^*$ |
+| `ehl`, `gtl` | $\lvert\hat{E}\rvert$, $\lvert E^*\rvert$ |
+| `r_pred`, `r_oracle` | the prediction-matched and annotation-matched random windows (for `r_oracle` see caveat 1 above) |
+| `rnorm`, `r_norm` | $\rho$ |
+| `blind`, `predicted_keep`, `r_pred_keep_<k>` (step3 `preds` labels) | the three re-queries behind $\mathrm{Ret(none)}$, $\mathrm{Ret(pred)}$ and $\mathrm{Ret(rand)}$ |
+| `mean_of_means`, `pooled` | unweighted mean over models, mean over (question, model) rows |
+
+`supportgain/core/metrics.py` and `supportgain/protocol/step4_metrics.py` hold
+a separate, older metric suite (`Self-CTEF`, `GT-CTEF@Correct`, `CGA`,
+`OP-Rescue`, …) reached only through `run.py --steps 4`. No paper number comes
+from it, and its keys are not in the table above.
+
 ---
 
 ## Data
@@ -297,7 +332,8 @@ Point the adapters at your clones with
 `TEF_VIDEOMIND_ROOT`, `TEF_GROUNDVTS_ROOT`, `TEF_GVLLM_ROOT`,
 `TEF_VTIMELLM_ROOT`, `TEF_TIMECHAT_ROOT` (defaults: `~/<RepoName>`), and at
 checkpoints with `TEF_VIDEOMIND_CKPT`, `TEF_GROUNDVTS_CKPT`, `VCR1_MODEL`,
-`TEF_INTERNVL_CKPT`, `TEF_VIDEOLLAMA2_CKPT`.
+`TEF_INTERNVL_CKPT`, `TEF_VIDEOLLAMA2_CKPT`. (`TEF` is this project's working
+name; the environment variables keep it so existing setups keep working.)
 
 ---
 

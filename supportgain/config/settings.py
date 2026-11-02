@@ -37,14 +37,14 @@ DEFAULT_PHASE = 'phase1'     # 'phase1' (frame replace black) | 'phase2' (frame 
 OVERLAP_THR = 0.2
 MAX_TRIES = 100
 
-# Grounding output unification (PDF/Self-CTEF): every model's grounding is
-# reduced to a SINGLE absolute-second interval via this rule, then clamped to
-# [0, duration]. 'longest' = pick the longest candidate span (model-agnostic,
-# no confidence needed). See utils.intervals.finalize_interval.
+# Grounding output unification: every model's grounding is reduced to a SINGLE
+# absolute-second interval via this rule, then clamped to [0, duration].
+# 'longest' = pick the longest candidate span (model-agnostic, no confidence
+# needed). See supportgain.core.intervals.finalize_interval.
 GROUNDING_REDUCE = 'longest'
 
 # Random seeds for K = 0..N-1 are derived from the vqid hash;
-# see utils/intervals.py:random_intervals_for_vqid.
+# see supportgain/core/intervals.py:random_intervals.
 
 # Number of labels (NExT-QA is 5-choice)
 NUM_CHOICES = 5

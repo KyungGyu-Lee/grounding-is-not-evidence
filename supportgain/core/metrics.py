@@ -1,12 +1,19 @@
-"""Metric computation as defined in temporal_evidence_faithfulness_metrics.pdf.
+"""The step-4 metric suite: the project's earlier sufficiency / necessity
+composites, reached only through `run.py --steps 4`.
 
-  Self-CTEF        (target = a_full,  R_pred only)        — §3
+Nothing here feeds a paper number. Every reported quantity is built by
+paper/build_paper_numbers.py from the stored step1 / step3 outputs. The dict
+keys that compute_all() returns are the names these metrics shipped under and
+are deliberately left unchanged; README, "Legacy key names", maps the keys the
+paper does use to its own notation.
+
+  Self-CTEF        (target = a_full,  R_pred only)
   GT-CTEF@Correct  (target = y,       on full_correct,
-                     uses R_pred AND R_oracle)            — §4
-  CGA              FullAcc * GT-CTEF@Correct              — §5
-  OP-Rescue        (on full_wrong subset)                 — §6
-  Remove Random Stability                                 — §6
-  Raw GT-Suff / Raw GT-Nece                               — §6 (diagnostic)
+                     uses R_pred AND R_oracle)
+  CGA              FullAcc * GT-CTEF@Correct
+  OP-Rescue        (on full_wrong subset)
+  Remove Random Stability
+  Raw GT-Suff / Raw GT-Nece                               (diagnostic)
 """
 from typing import Sequence, Optional
 
@@ -67,7 +74,7 @@ def _harmonic_mean(a, b):
 
 
 # ---------------------------------------------------------------------
-# §3 Self-CTEF (target = a_full)
+# Self-CTEF (target = a_full) — predicted window only
 # ---------------------------------------------------------------------
 
 def self_suff(records):
@@ -93,7 +100,7 @@ def self_ctef(records):
 
 
 # ---------------------------------------------------------------------
-# §4 GT-CTEF@Correct (subset: a_full == y)
+# GT-CTEF@Correct (subset: a_full == y) — uses the annotated window
 # ---------------------------------------------------------------------
 
 def _correct_subset(records):
@@ -235,18 +242,18 @@ def mean_pred_gt_len_ratio(records):
 def compute_all(records):
     """Return a dict of every metric defined above."""
     return {
-        # §3
+        # predicted window only
         'Self-Suff': self_suff(records),
         'Self-Nece': self_nece(records),
         'Self-CTEF': self_ctef(records),
-        # §4
+        # annotated window, on the full-video-correct subset
         'GT-Suff@Correct': gt_suff_correct(records),
         'GT-Nece@Correct': gt_nece_correct(records),
         'GT-CTEF@Correct': gt_ctef_correct(records),
-        # §5
+        # accuracy-weighted
         'FullAcc': full_acc(records),
         'CGA': cga(records),
-        # §6
+        # diagnostics
         'OP-Rescue': op_rescue(records),
         'RemoveRandomStability': remove_random_stability(records),
         'Raw-GT-Suff': raw_gt_suff(records),

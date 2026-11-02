@@ -11,7 +11,9 @@ Steps
     1  full_inference        (a_full + grounding + IoU)
     2  segment_preparation   (R_pred + R_oracle with N seeds)
     3  intervention          (Keep/Remove for every segment family + Blind)
-    4  metric_computation    (Self-CTEF / GT-CTEF@Correct / CGA / OP-Rescue / ...)
+    4  metric_computation    (the older step-4 metric suite, kept as-is; no
+                             paper number comes from it — see README,
+                             "Legacy key names")
 
 Per-sample inference count: 7 + 4*N_random   (=19 when N=3).
 
@@ -67,8 +69,10 @@ def main():
     p.add_argument('--families', default='all',
                    choices=['all', 'self', 'gt'],
                    help='Which metric families step 3 runs. "self" = E_hat + '
-                        'R_pred (Self-CTEF); "gt" = E_star + R_oracle '
-                        '(GT-CTEF/CGA/OP-Rescue); "all" = both (default). '
+                        'R_pred (Support Gain on the predicted window); '
+                        '"gt" = E_star + R_oracle (the positive control, plus '
+                        'the gt-dependent step-4 metrics); "all" = both '
+                        '(default). '
                         'Run "self" first, then "gt" later to top-up GT '
                         'metrics without recomputing the self inferences '
                         '(label-level merge into the existing step3.json).')

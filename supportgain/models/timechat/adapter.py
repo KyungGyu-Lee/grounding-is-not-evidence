@@ -5,12 +5,12 @@ timestamp-aware Video Q-Former (window 32) + LLaMA-2-7B-chat (LoRA). It samples
 a FIXED budget of 96 frames and binds each frame to its absolute timestamp, so
 it grounds and answers in real seconds.
 
-TEF integration (aligned with MODEL_SETUP_GUIDE + the other adapters):
+Integration (same adapter contract as the other adapters):
 - FIXED frame budget (96) -> keep/remove interventions are done at the
   VIDEO-PATH level (crop the evidence window with ffmpeg, then re-sample 96
   frames from the crop), NOT by subsetting the 96 full-video frames. Same
   rationale as VideoMind / GVLLM / VTimeLLM: always 96 frames, in-distribution.
-- QA prompt: SHARED (configs.prompts.build_qa_prompt), letter parsed by the
+- QA prompt: SHARED (supportgain.config.prompts.build_qa_prompt), parsed by the
   shared parser.
 - Grounding: SHARED GROUNDING_CORE (question-conditioned, NO answer leak) with
   TimeChat's native "start/end timestamps in seconds" output trigger. Because
